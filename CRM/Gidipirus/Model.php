@@ -49,7 +49,7 @@ class CRM_Gidipirus_Model {
       $params = array_merge($params, $options);
       $result = civicrm_api3('OptionGroup', 'create', $params);
     }
-    return $result['values'][0]['value'];
+    return $result['id'];
 
   }
 

@@ -8,7 +8,7 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
   const PHONE = 'phone';
   const PERSONAL = 'personal';
   const PAPER_LETTER = 'paper letter';
-  const EXPIRED = 'Expired';
+  const EXPIRED = 'expired';
 
   /**
    * Get Request channel - Ready

@@ -10,7 +10,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const COMPLETED = 'Completed';
   const BLOCKED = 'Blocked';
   const INVALID_REQUEST = 'Invalid Request';
-  const TOO_MANY_REQUESTS = 'Too many requests';
+  const TOO_MANY_REQUESTS = 'Too Many Requests';
 
   /**
    * Get Forgetme status - Ready
