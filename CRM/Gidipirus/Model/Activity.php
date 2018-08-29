@@ -15,7 +15,7 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
     $key = __CLASS__ . __FUNCTION__;
     $cache = Civi::cache()->get($key);
     if (!isset($cache)) {
-      $id = self::activityType(self::FORGETME_REQUEST);
+      $id = self::set(self::FORGETME_REQUEST);
       Civi::cache()->set($key, $id);
       return $id;
     }
@@ -32,7 +32,7 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
     $key = __CLASS__ . __FUNCTION__;
     $cache = Civi::cache()->get($key);
     if (!isset($cache)) {
-      $id = self::activityType(self::FORGETME_FULFILLMENT);
+      $id = self::set(self::FORGETME_FULFILLMENT);
       Civi::cache()->set($key, $id);
       return $id;
     }
@@ -47,8 +47,8 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
    * @return int
    * @throws \CiviCRM_API3_Exception
    */
-  private static function activityType($name) {
-    return self::set('activity_type', $name);
+  private static function set($name) {
+    return self::optionValue('activity_type', $name);
   }
 
 }
