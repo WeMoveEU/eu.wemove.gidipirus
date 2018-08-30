@@ -12,6 +12,24 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const INVALID_REQUEST = 'Invalid Request';
   const TOO_MANY_REQUESTS = 'Too Many Requests';
 
+  const READY_VALUE = 10;
+  const IN_PROGRESS_VALUE = 20;
+  const OBSOLETE_VALUE = 30;
+  const COMPLETED_VALUE = 40;
+  const BLOCKED_VALUE = 50;
+  const INVALID_REQUEST_VALUE = 60;
+  const TOO_MANY_REQUESTS_VALUE = 70;
+
+  static $statusToValue = [
+    self::READY => self::READY_VALUE,
+    self::IN_PROGRESS => self::IN_PROGRESS_VALUE,
+    self::OBSOLETE => self::OBSOLETE_VALUE,
+    self::COMPLETED => self::COMPLETED_VALUE,
+    self::BLOCKED => self::BLOCKED_VALUE,
+    self::INVALID_REQUEST => self::INVALID_REQUEST_VALUE,
+    self::TOO_MANY_REQUESTS => self::TOO_MANY_REQUESTS_VALUE,
+  ];
+
   /**
    * Get Forgetme status - Ready
    *
@@ -146,7 +164,11 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
    * @throws \CiviCRM_API3_Exception
    */
   private static function set($name) {
-    return self::optionValue(self::sanitize(self::OPTION_GROUP_TITLE), $name);
+    return self::optionValue(
+      self::sanitize(self::OPTION_GROUP_TITLE),
+      $name,
+      ['value' => self::$statusToValue[$name]]
+    );
   }
 
 }
