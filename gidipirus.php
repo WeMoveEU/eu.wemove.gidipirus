@@ -123,6 +123,30 @@ function gidipirus_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _gidipirus_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+function gidipirus_civicrm_tabset($tabsetName, &$tabs, $context) {
+  if ($tabsetName == 'civicrm/contact/view') {
+    $contactId = $context['contact_id'];
+    $url = CRM_Utils_System::url('civicrm/gidipirus/view/tab', "reset=1&cid={$contactId}");
+    $tabs[] = [
+      'id' => 'gidipirus',
+      'title' => E::ts('Data processing'),
+      'url' => $url,
+      'weight' => findChangeLogWeight($tabs) - 1,
+      'count' => 0,
+      'class' => 'livePage',
+    ];
+  }
+}
+
+function findChangeLogWeight($tabs) {
+  foreach ($tabs as $tab) {
+    if ($tab['title'] == E::ts('Change Log')) {
+      return $tab['weight'];
+    }
+  }
+  return 1000;
+}
+
 /**
  * Implements hook_civicrm_navigationMenu().
  *
