@@ -35,23 +35,19 @@ function civicrm_api3_gidipirus_status(&$params) {
   else {
     $query = "SELECT
                 CASE
-                  WHEN af.status_id = 1 AND DATE_FORMAT(af.activity_date_time, '%Y-%m-%d') >= CURRENT_DATE THEN %4
-                  WHEN af.status_id = 1 AND DATE_FORMAT(af.activity_date_time, '%Y-%m-%d') < CURRENT_DATE THEN %5
-                  WHEN af.status_id = 2 THEN %6
-                  ELSE %7
+                  WHEN af.status_id = 1 AND DATE_FORMAT(af.activity_date_time, '%Y-%m-%d') >= CURRENT_DATE THEN %3
+                  WHEN af.status_id = 1 AND DATE_FORMAT(af.activity_date_time, '%Y-%m-%d') < CURRENT_DATE THEN %4
+                  WHEN af.status_id = 2 THEN %5
                 END forgetme_status
-              FROM civicrm_activity ar
-                JOIN civicrm_activity_contact acr ON acr.activity_id = ar.id AND acr.record_type_id = 3
-                LEFT JOIN civicrm_activity af ON af.parent_id = ar.id AND af.activity_type_id = %3
-              WHERE ar.activity_type_id = %2 AND acr.contact_id = %1";
+              FROM civicrm_activity af
+                JOIN civicrm_activity_contact acf ON acf.activity_id = af.id AND acf.record_type_id = 3
+              WHERE acf.contact_id = %1 AND af.activity_type_id = %2";
     $queryParams = [
       1 => [$contactId, 'Integer'],
-      2 => [CRM_Gidipirus_Model_Activity::forgetmeRequestId(), 'Integer'],
-      3 => [CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), 'Integer'],
-      4 => [CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE, 'Integer'],
-      5 => [CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE, 'Integer'],
-      6 => [CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE, 'Integer'],
-      7 => [CRM_Gidipirus_Model_ForgetmeStatus::INVALID_REQUEST_VALUE, 'Integer'],
+      2 => [CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), 'Integer'],
+      3 => [CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE, 'Integer'],
+      4 => [CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE, 'Integer'],
+      5 => [CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE, 'Integer'],
     ];
     $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
     if ($dao->N > 1) {
@@ -62,24 +58,7 @@ function civicrm_api3_gidipirus_status(&$params) {
       $forgetmeStatus = $dao->forgetme_status;
     }
     else {
-      $queryFulfillment = "SELECT acf.contact_id
-                            FROM civicrm_activity af
-                              JOIN civicrm_activity_contact acf ON acf.activity_id = af.id AND acf.record_type_id = 3
-                              LEFT JOIN civicrm_activity ar ON ar.id =  af.parent_id AND ar.activity_type_id = %2
-                            WHERE acf.contact_id = %1 AND af.activity_type_id = %3 AND ar.id IS NULL";
-      $queryFulfillmentParams = [
-        1 => [$contactId, 'Integer'],
-        2 => [CRM_Gidipirus_Model_Activity::forgetmeRequestId(), 'Integer'],
-        3 => [CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), 'Integer'],
-      ];
-      $daoF = CRM_Core_DAO::executeQuery($queryFulfillment, $queryFulfillmentParams);
-      if ($daoF->N > 0) {
-        $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::INVALID_REQUEST_VALUE;
-      }
-      else {
-        $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE;
-      }
-      $daoF->free();
+      $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE;
     }
     $dao->free();
   }
