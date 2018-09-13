@@ -9,7 +9,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const OBSOLETE = 'Obsolete';
   const COMPLETED = 'Completed';
   const BLOCKED = 'Blocked';
-  const INVALID_REQUEST = 'Invalid Request';
   const TOO_MANY_REQUESTS = 'Too Many Requests';
 
   const READY_VALUE = 10;
@@ -17,8 +16,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const OBSOLETE_VALUE = 30;
   const COMPLETED_VALUE = 40;
   const BLOCKED_VALUE = 50;
-  const INVALID_REQUEST_VALUE = 60;
-  const TOO_MANY_REQUESTS_VALUE = 70;
+  const TOO_MANY_REQUESTS_VALUE = 60;
 
   static $statusToValue = [
     self::READY => self::READY_VALUE,
@@ -26,7 +24,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::OBSOLETE => self::OBSOLETE_VALUE,
     self::COMPLETED => self::COMPLETED_VALUE,
     self::BLOCKED => self::BLOCKED_VALUE,
-    self::INVALID_REQUEST => self::INVALID_REQUEST_VALUE,
     self::TOO_MANY_REQUESTS => self::TOO_MANY_REQUESTS_VALUE,
   ];
 
@@ -109,23 +106,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     $cache = Civi::cache()->get($key);
     if (!isset($cache)) {
       $id = self::set(self::BLOCKED);
-      Civi::cache()->set($key, $id);
-      return $id;
-    }
-    return $cache;
-  }
-
-  /**
-   * Get Forgetme status - Invalid Request
-   *
-   * @return int|mixed
-   * @throws \CiviCRM_API3_Exception
-   */
-  public static function invalidRequest() {
-    $key = __CLASS__ . __FUNCTION__;
-    $cache = Civi::cache()->get($key);
-    if (!isset($cache)) {
-      $id = self::set(self::INVALID_REQUEST);
       Civi::cache()->set($key, $id);
       return $id;
     }
