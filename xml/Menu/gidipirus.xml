@@ -6,4 +6,10 @@
     <title>Data processing</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/gidipirus/settings</path>
+    <page_callback>CRM_Gidipirus_Form_Settings</page_callback>
+    <title>Gidipirus Settings Page</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
 </menu>
