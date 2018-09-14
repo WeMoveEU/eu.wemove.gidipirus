@@ -27,6 +27,8 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
     CRM_Gidipirus_Model_RequestChannel::paperLetter();
     CRM_Gidipirus_Model_RequestChannel::expired();
 
+    CRM_Gidipirus_Settings::scheduledDays();
+
     return TRUE;
   }
 
