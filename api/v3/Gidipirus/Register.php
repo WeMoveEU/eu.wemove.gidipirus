@@ -56,9 +56,7 @@ function civicrm_api3_gidipirus_register(&$params) {
   $values = [];
   foreach ($contactIds as $contactId) {
     $result = CRM_Gidipirus_Logic_Register::add($contactId, $channel, $requestedDate, $activityParentId);
-    $values[$contactId] = [
-      'result' => $result,
-    ];
+    $values[$contactId] = $result;
   }
   $extraReturnValues = array(
     'time' => microtime(TRUE) - $start,
