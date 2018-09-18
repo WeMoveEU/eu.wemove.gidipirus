@@ -10,6 +10,14 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
   const PAPER_LETTER = 'paper letter';
   const EXPIRED = 'expired';
 
+  private static $valid = [
+    self::EMAIL,
+    self::PHONE,
+    self::PERSONAL,
+    self::PAPER_LETTER,
+    self::EXPIRED,
+  ];
+
   /**
    * Get Request channel - Ready
    *
@@ -111,6 +119,15 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
    */
   private static function set($name) {
     return self::optionValue(self::sanitize(self::OPTION_GROUP_TITLE), $name);
+  }
+
+  /**
+   * @param string $name Name of channel
+   *
+   * @return bool
+   */
+  public static function isValid($name) {
+    return in_array($name, self::$valid);
   }
 
 }
