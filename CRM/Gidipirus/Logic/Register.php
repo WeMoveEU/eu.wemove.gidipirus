@@ -19,13 +19,23 @@ class CRM_Gidipirus_Logic_Register {
       'activity_date_time' => self::date($requestedDate),
       'status_id' => 'Scheduled',
       'subject' => self::subject($requestedDate),
-      'source_contact_id' => $contactId,
       'location' => $channel,
+      'api.ActivityContact.create' => [
+        0 => [
+          'activity_id' => '$value.id',
+          'contact_id' => CRM_Core_Session::getLoggedInContactID(),
+          'record_type_id' => 2,
+        ],
+        1 => [
+          'activity_id' => '$value.id',
+          'contact_id' => $contactId,
+          'record_type_id' => 3,
+        ],
+      ],
     ];
     if ($parentActivityId) {
       $params['parent_id'] = $parentActivityId;
     }
-    // todo set target (contactId) and added contact (logged user)
     $result = civicrm_api3('Activity', 'create', $params);
     if ($result['id']) {
       return [
