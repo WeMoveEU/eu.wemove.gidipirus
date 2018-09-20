@@ -3,9 +3,41 @@
 class CRM_Gidipirus_Logic_Register {
 
   /**
-   * @param $contactId
-   * @param $channel
-   * @param $requestedDate
+   * Check whether contact has FulFillment Request and returns activity id.
+   *
+   * @param int $contactId
+   *
+   * @return int
+   * @throws \CRM_Gidipirus_Exception_TooManyFulfillment
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function hasRequest($contactId) {
+    $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
+    $query = "SELECT a.id
+              FROM civicrm_activity a
+                JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
+              WHERE a.activity_type_id = %1 AND ac.contact_id = %2";
+    $params = [
+      1 => [$fulfillmentId, 'Integer'],
+      2 => [$contactId, 'Integer'],
+    ];
+    $dao = CRM_Core_DAO::executeQuery($query, $params);
+    if ($dao->N > 1) {
+      throw new CRM_Gidipirus_Exception_TooManyFulfillment('Too many fulfillment request');
+    }
+    elseif ($dao->N == 1) {
+      $dao->fetch();
+      return $dao->id;
+    }
+    else {
+      return 0;
+    }
+  }
+
+  /**
+   * @param int $contactId
+   * @param string $channel
+   * @param string $requestedDate
    * @param int $parentActivityId
    *
    * @return array
