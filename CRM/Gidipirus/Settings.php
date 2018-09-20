@@ -8,6 +8,11 @@ class CRM_Gidipirus_Settings {
   const SCHEDULED_DAYS_DEFAULT = 21;
 
   /**
+   * Template of email for anonymisation
+   */
+  const EMAIL_TEMPLATE = 'forgetme+%RANDOM%@wemove.eu';
+
+  /**
    * Get or set scheduled days.
    *
    * @param int $days
@@ -27,7 +32,31 @@ class CRM_Gidipirus_Settings {
     return $days;
   }
 
+  /**
+   * Get or set email template
+   *
+   * @param string $template
+   *
+   * @return mixed
+   */
+  public static function emailTemplate($template = '') {
+    if ($template) {
+      Civi::settings()->set(self::emailTemplateKey(), $template);
+      return $template;
+    }
+    $template = Civi::settings()->get(self::emailTemplateKey());
+    if (!$template) {
+      Civi::settings()->set(self::emailTemplateKey(), self::EMAIL_TEMPLATE);
+    }
+
+    return $template;
+  }
+
   private static function scheduledDaysKey() {
+    return __CLASS__ . '.' . __METHOD__;
+  }
+
+  private static function emailTemplateKey() {
     return __CLASS__ . '.' . __METHOD__;
   }
 
