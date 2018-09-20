@@ -15,6 +15,7 @@ class CRM_Gidipirus_Logic_Forget {
     $tagId = CRM_Gidipirus_Model_Tag::forgottenId();
     CRM_Gidipirus_Model_Tag::add($contactId, $tagId);
     CRM_Gidipirus_Logic_Email::anonymize($contactId, CRM_Gidipirus_Settings::emailTemplate());
+    CRM_Gidipirus_Logic_Contact::clean($contactId);
 
     return 0;
   }
