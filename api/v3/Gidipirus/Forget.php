@@ -28,16 +28,13 @@ function civicrm_api3_gidipirus_forget(&$params) {
   $values = [];
   foreach ($contactIds as $contactId) {
     try {
-      $fulfillmentId = CRM_Gidipirus_Logic_Register::hasRequest($contactId);
-      if (!$fulfillmentId) {
-        // todo create new fulfillment
-      }
-      $result = CRM_Gidipirus_Logic_Forget::forget($contactId);
+      $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId);
+      $result = CRM_Gidipirus_Logic_Forget::forget($contactId, $requestId);
       $values[$contactId] = [
         'result' => $result,
       ];
     }
-    catch (CRM_Gidipirus_Exception_TooManyFulfillment $exception) {
+    catch (CRM_Extension_Exception $exception) {
       $values[$contactId] = [
         'result' => 0,
         'error' => $exception->getMessage(),

@@ -8,6 +8,7 @@ class CRM_Gidipirus_Logic_Register {
    * @param int $contactId
    *
    * @return int
+   * @throws \CRM_Gidipirus_Exception_NoFulfillment
    * @throws \CRM_Gidipirus_Exception_TooManyFulfillment
    * @throws \CiviCRM_API3_Exception
    */
@@ -23,14 +24,14 @@ class CRM_Gidipirus_Logic_Register {
     ];
     $dao = CRM_Core_DAO::executeQuery($query, $params);
     if ($dao->N > 1) {
-      throw new CRM_Gidipirus_Exception_TooManyFulfillment('Too many fulfillment request');
+      throw new CRM_Gidipirus_Exception_TooManyFulfillment('Too many Forgetme Fulfillment requests');
     }
     elseif ($dao->N == 1) {
       $dao->fetch();
       return $dao->id;
     }
     else {
-      return 0;
+      throw new CRM_Gidipirus_Exception_NoFulfillment('Forgetme Fulfillment activity does not exist');
     }
   }
 
