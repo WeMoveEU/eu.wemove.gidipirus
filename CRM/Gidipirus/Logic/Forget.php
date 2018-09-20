@@ -16,6 +16,10 @@ class CRM_Gidipirus_Logic_Forget {
     CRM_Gidipirus_Model_Tag::add($contactId, $tagId);
     CRM_Gidipirus_Logic_Email::anonymize($contactId, CRM_Gidipirus_Settings::emailTemplate());
     CRM_Gidipirus_Logic_Contact::clean($contactId);
+    $addresses = CRM_Gidipirus_Logic_Address::clean($contactId);
+    if ($addresses > 1) {
+      CRM_Gidipirus_Logic_Address::dedupe($contactId);
+    }
 
     return 0;
   }
