@@ -45,4 +45,29 @@ class CRM_Gidipirus_Model_Tag {
     return $result['id'];
   }
 
+  /**
+   * Add tag to contact
+   *
+   * @param int $contactId
+   * @param int $tagId
+   *
+   * @return
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function add($contactId, $tagId) {
+    $params = array(
+      'sequential' => 1,
+      'entity_table' => "civicrm_contact",
+      'entity_id' => $contactId,
+      'tag_id' => $tagId,
+    );
+    $result = civicrm_api3('EntityTag', 'get', $params);
+    if (!$result['count']) {
+      $result = civicrm_api3('EntityTag', 'create', $params);
+      return !!$result['added'];
+    }
+
+    return !!$result['count'];
+  }
+
 }

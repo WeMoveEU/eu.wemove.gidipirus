@@ -13,6 +13,7 @@ class CRM_Gidipirus_Logic_Forget {
    */
   public static function forget($contactId, $requestId) {
     $tagId = CRM_Gidipirus_Model_Tag::forgottenId();
+    CRM_Gidipirus_Model_Tag::add($contactId, $tagId);
 
     return 0;
   }
