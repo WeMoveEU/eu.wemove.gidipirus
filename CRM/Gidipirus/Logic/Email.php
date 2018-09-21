@@ -36,27 +36,7 @@ class CRM_Gidipirus_Logic_Email {
    * @throws \Exception
    */
   private static function random($emailTemplate) {
-    return str_replace('%RANDOM%', self::hash(), $emailTemplate);
-  }
-
-  /**
-   * @param int $lenght
-   *
-   * @return bool|string
-   * @throws \Exception
-   */
-  private static function hash($lenght = 15) {
-    if (function_exists("random_bytes")) {
-      $bytes = random_bytes(ceil($lenght / 2));
-    }
-    elseif (function_exists("openssl_random_pseudo_bytes")) {
-      $bytes = openssl_random_pseudo_bytes(ceil($lenght / 2));
-    }
-    else {
-      throw new Exception("no cryptographically secure random function available");
-    }
-
-    return substr(bin2hex($bytes), 0, $lenght);
+    return str_replace('%RANDOM%', CRM_Gidipirus_Model::hash(), $emailTemplate);
   }
 
 }

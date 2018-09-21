@@ -20,6 +20,7 @@ class CRM_Gidipirus_Logic_Forget {
     if ($addresses > 1) {
       CRM_Gidipirus_Logic_Address::dedupe($contactId);
     }
+    CRM_Gidipirus_Logic_Phone::anonymize($contactId);
 
     return 0;
   }
