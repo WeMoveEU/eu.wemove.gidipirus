@@ -2,6 +2,8 @@
 
 class CRM_Gidipirus_Logic_Address {
 
+  const LOCATION_TYPE = 'Home';
+
   /**
    * @param $contactId
    *
@@ -12,7 +14,7 @@ class CRM_Gidipirus_Logic_Address {
     $params = [
       'sequential' => 1,
       'contact_id' => $contactId,
-      'location_type_id' => 'Home',
+      'location_type_id' => self::LOCATION_TYPE,
     ];
     $result = civicrm_api3('Address', 'get', $params);
     if ($result['count']) {
@@ -27,6 +29,9 @@ class CRM_Gidipirus_Logic_Address {
           'postal_code' => '',
           'geo_code_1' => '',
           'geo_code_2' => '',
+          'supplemental_address_1' => '',
+          'supplemental_address_2' => '',
+          'supplemental_address_3' => '',
         ];
         civicrm_api3('Address', 'create', $params);
       }
@@ -44,11 +49,40 @@ class CRM_Gidipirus_Logic_Address {
     $params = [
       'sequential' => 1,
       'contact_id' => $contactId,
-      'location_type_id' => 'Home',
+      'location_type_id' => self::LOCATION_TYPE,
     ];
     $result = civicrm_api3('Address', 'get', $params);
-    // todo find addresses with the same country
-    // todo delete additional addresses
+    if ($result['count'] > 1) {
+      $adrPerCountry = [];
+      $adrDelete = [];
+      foreach ($result['values'] as $adr) {
+        $adrPerCountry[$adr['country_id']][] = $adr['id'];
+      }
+      foreach ($adrPerCountry as $country) {
+        if (count($country) > 1) {
+          unset($country[0]);
+          $adrDelete = array_merge($adrDelete, $country);
+        }
+      }
+      if ($adrDelete) {
+        self::delete($adrDelete);
+      }
+    }
+  }
+
+  /**
+   * @param $addressIds
+   *
+   * @throws \CiviCRM_API3_Exception
+   */
+  private static function delete($addressIds) {
+    foreach ($addressIds as $id) {
+      $params = [
+        'sequential' => 1,
+        'id' => $id,
+      ];
+      civicrm_api3('Address', 'delete', $params);
+    }
   }
 
 }
