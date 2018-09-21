@@ -21,8 +21,9 @@ class CRM_Gidipirus_Logic_Forget {
       CRM_Gidipirus_Logic_Address::dedupe($contactId);
     }
     CRM_Gidipirus_Logic_Phone::anonymize($contactId);
+    CRM_Gidipirus_Logic_Activity::clean($contactId);
 
-    return 0;
+    return 1;
   }
 
 }
