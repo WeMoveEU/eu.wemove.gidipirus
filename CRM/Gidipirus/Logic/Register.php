@@ -81,6 +81,25 @@ class CRM_Gidipirus_Logic_Register {
     ];
   }
 
+  /**
+   * Complete Forgetme Fulfillment request activity
+   *
+   * @param int $requestId Id of Forgetme Fulfillment request activity
+   *
+   * @return bool
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function complete($requestId) {
+    $params = [
+      'sequential' => 1,
+      'id' => $requestId,
+      'status_id' => 'Completed',
+      'activity_date_time' => date('YmdHis'),
+    ];
+    $result = civicrm_api3('Activity', 'create', $params);
+    return !!$result['count'];
+  }
+
   private static function date($requestedDate) {
     $scheduledDays = CRM_Gidipirus_Settings::scheduledDays();
     $rd = substr(str_replace('-', '', $requestedDate), 0, 8);
