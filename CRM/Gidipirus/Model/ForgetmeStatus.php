@@ -27,6 +27,25 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::TOO_MANY_REQUESTS => self::TOO_MANY_REQUESTS_VALUE,
   ];
 
+  static $value = [
+    self::READY_VALUE => self::READY,
+    self::IN_PROGRESS_VALUE => self::IN_PROGRESS,
+    self::OBSOLETE_VALUE => self::OBSOLETE,
+    self::COMPLETED_VALUE => self::COMPLETED,
+    self::BLOCKED_VALUE => self::BLOCKED,
+    self::TOO_MANY_REQUESTS_VALUE => self::TOO_MANY_REQUESTS,
+  ];
+
+  static $nameToValue = [
+    'ready' => self::READY_VALUE,
+    'inprogress' => self::IN_PROGRESS_VALUE,
+    'obsolete' => self::OBSOLETE_VALUE,
+    'completed' => self::COMPLETED_VALUE,
+    'blocked' => self::BLOCKED_VALUE,
+    'toomanyrequest' => self::TOO_MANY_REQUESTS_VALUE,
+  ];
+
+
   /**
    * Get Forgetme status - Ready
    *
