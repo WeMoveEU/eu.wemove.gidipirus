@@ -18,6 +18,13 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
     self::EXPIRED,
   ];
 
+  public static $values = [
+    self::EMAIL => self::EMAIL,
+    self::PHONE => self::PHONE,
+    self::PERSONAL => self::PERSONAL,
+    self::PAPER_LETTER => self::PAPER_LETTER,
+  ];
+
   /**
    * Get Request channel - Ready
    *
