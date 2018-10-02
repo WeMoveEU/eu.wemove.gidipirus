@@ -1,4 +1,5 @@
 {crmScope extensionKey=$extensionKey}
+  <h3>{$displayName}</h3>
   <div class="form-item">
     <div class="crm-block crm-form-block">
 

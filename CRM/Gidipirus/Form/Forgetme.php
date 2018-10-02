@@ -64,6 +64,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     $this->statusId = $this->getStatus($this->contactId);
     $this->setButtonsState($this->statusId);
 
+    $this->assign('displayName', $this->getDisplayName($this->contactId));
     $this->assign('statusId', $this->statusId);
     $this->assign('subName', $this->subName);
     $this->assign('forgetmeValue', CRM_Gidipirus_Model_ForgetmeStatus::$value);
@@ -139,6 +140,22 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
       'contact_id' => $contactId,
     ]);
     return (int) $result['values'][0]['status'];
+  }
+
+  /**
+   * @param $contactId
+   *
+   * @return mixed
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function getDisplayName($contactId) {
+    $params = [
+      'sequential' => 1,
+      'id' => $contactId,
+      'return' => 'display_name',
+    ];
+    $result = civicrm_api3('Contact', 'get', $params);
+    return $result['values'][0]['display_name'];
   }
 
   /**
