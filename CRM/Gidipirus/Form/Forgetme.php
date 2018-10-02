@@ -92,6 +92,8 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   }
 
   /**
+   * @throws \CRM_Gidipirus_Exception_NoFulfillment
+   * @throws \CRM_Gidipirus_Exception_TooManyFulfillment
    * @throws \CiviCRM_API3_Exception
    */
   public function postProcess() {
@@ -104,14 +106,16 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         break;
 
       case 'done':
-        $result = $this->register($this->contactId, $channel, $requestDate);
-        if ($result) {
-          $result = $this->forget($this->contactId);
-          $this->setMessageForget($result);
+        try {
+          CRM_Gidipirus_Logic_Register::hasRequest($this->contactId);
         }
-        else {
-          $this->setMessageRegister($result);
+        catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
+          $this->register($this->contactId, $channel, $requestDate);
         }
+        catch (CRM_Gidipirus_Exception_TooManyFulfillment $exception) {
+        }
+        $result = $this->forget($this->contactId);
+        $this->setMessageForget($result);
         break;
     }
     $url = CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]);
