@@ -126,27 +126,31 @@ function gidipirus_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
 function gidipirus_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
   if ('Contact' == $objectName) {
     switch ($op) {
-      case 'view.contact.activity':
-        $links[] = array(
-          'name' => E::ts('ForgetMe'),
-          'url' => '/civicrm/gidipirus/forgetme?cid=' . $objectId,
-          'title' => 'Forget Me',
-          'class' => 'no-popup',
-        );
-        break;
-
       case 'contact.selector.actions':
         $links[] = array(
-          'name' => E::ts('ForgetMe'),
-          'url' => '/civicrm/gidipirus/forgetme',
+          'name' => E::ts('Forget Me'),
+          'url' => 'civicrm/gidipirus/forgetme',
           'qs' => 'cid=%%id%%',
           'title' => 'Forget Me',
+          'ref' => 'forgetme',
           'class' => 'no-popup',
+          'bit' => 100000,
         );
         break;
-
     }
   }
+}
+
+function gidipirus_civicrm_summaryActions(&$actions, $contactID) {
+  $actions['otherActions']['forgetme'] = [
+    'title' => E::ts("Forget Me"),
+    'weight' => 1000,
+    'ref' => 'forgetme',
+    'key' => 'forgetme',
+    'href' => CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['reset' => 1]),
+    'icon' => 'crm-i fa-envelope-open',
+    'permissions' => ['access CiviCRM']
+  ];
 }
 
 /**
