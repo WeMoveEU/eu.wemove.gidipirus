@@ -103,8 +103,14 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         break;
 
       case 'done':
-        $result = $this->forget($this->contactId);
-        $this->setMessageForget($result);
+        $result = $this->register($this->contactId, $channel, $requestDate);
+        if ($result) {
+          $result = $this->forget($this->contactId);
+          $this->setMessageForget($result);
+        }
+        else {
+          $this->setMessageRegister($result);
+        }
         break;
     }
     $url = CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]);
