@@ -98,15 +98,12 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     switch ($this->subName) {
       case 'submit':
         $result = $this->register($this->contactId, $channel, $requestDate);
-        if ($result) {
-          CRM_Core_Session::setStatus(E::ts('Registered request'), 'Gidipirus', 'success');
-        }
-        else {
-          CRM_Core_Session::setStatus(E::ts('There is a problem with registering request'), 'Gidipirus');
-        }
+        $this->setMessageRegister($result);
         break;
 
       case 'done':
+        $result = $this->forget($this->contactId);
+        $this->setMessageForget($result);
         break;
     }
     $url = CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]);
@@ -185,6 +182,45 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     ];
     $result = civicrm_api3('Gidipirus', 'register', $params);
     return $result['values'][0]['result'];
+  }
+
+  /**
+   * @param int $contactId
+   *
+   * @return mixed
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function forget($contactId) {
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => $contactId,
+    ];
+    $result = civicrm_api3('Gidipirus', 'forget', $params);
+    return $result['values'][0];
+  }
+
+  /**
+   * @param $result
+   */
+  private function setMessageRegister($result) {
+    if ($result) {
+      CRM_Core_Session::setStatus(E::ts('Registered request'), 'Gidipirus', 'success');
+    }
+    else {
+      CRM_Core_Session::setStatus(E::ts('There is a problem with registering request'), 'Gidipirus');
+    }
+  }
+
+  /**
+   * @param $result
+   */
+  private function setMessageForget($result) {
+    if ($result['result']) {
+      CRM_Core_Session::setStatus(E::ts('Contact is forgotten now'), 'Gidipirus', 'success');
+    }
+    else {
+      CRM_Core_Session::setStatus(E::ts('There is a problem with forgetting the contact: %1', [1 => $result['error']]), 'Gidipirus');
+    }
   }
 
 }
