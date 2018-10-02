@@ -13,7 +13,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   private $statusId;
 
   public function __construct($state = NULL, $action = CRM_Core_Action::NONE, $method = 'post', $name = NULL) {
-    CRM_Utils_System::setTitle(E::ts('Data processing'));
+    CRM_Utils_System::setTitle(E::ts('ForgetMe'));
     $this->fields = [
       'request_date' => [
         'type' => 'datepicker',
@@ -68,6 +68,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
 
     $this->assign('statusId', $this->statusId);
     $this->assign('subName', $this->subName);
+    $this->assign('forgetmeValue', CRM_Gidipirus_Model_ForgetmeStatus::$value);
     $this->assign('forgetmeStatus', CRM_Gidipirus_Model_ForgetmeStatus::$nameToValue);
     $this->assign('extensionKey', E::LONG_NAME);
   }

@@ -1,8 +1,12 @@
 {crmScope extensionKey=$extensionKey}
-  <p>ForgetMe Status: {$statusId}</p>
-  <p>subName: {$subName}</p>
   <div class="form-item">
     <div class="crm-block crm-form-block">
+
+      <div class="crm-section">
+        <div class="label">Status</div>
+        <div class="content">{$forgetmeValue[$statusId]}</div>
+        <div class="clear"></div>
+      </div>
 
       <div class="crm-section">
         <div class="label">{$form.request_date.label}</div>
