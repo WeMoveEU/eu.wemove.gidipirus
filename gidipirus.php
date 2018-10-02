@@ -123,6 +123,32 @@ function gidipirus_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _gidipirus_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+function gidipirus_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
+  if ('Contact' == $objectName) {
+    switch ($op) {
+      case 'view.contact.activity':
+        $links[] = array(
+          'name' => E::ts('ForgetMe'),
+          'url' => '/civicrm/gidipirus/forgetme?cid=' . $objectId,
+          'title' => 'Forget Me',
+          'class' => 'no-popup',
+        );
+        break;
+
+      case 'contact.selector.actions':
+        $links[] = array(
+          'name' => E::ts('ForgetMe'),
+          'url' => '/civicrm/gidipirus/forgetme',
+          'qs' => 'cid=%%id%%',
+          'title' => 'Forget Me',
+          'class' => 'no-popup',
+        );
+        break;
+
+    }
+  }
+}
+
 /**
  * Implements hook_civicrm_navigationMenu().
  *
