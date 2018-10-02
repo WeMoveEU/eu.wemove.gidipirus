@@ -34,14 +34,14 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
       ],
     ];
     $this->buttons = [
-      [
+      'register' => [
         'type' => 'submit',
         'name' => ts('Register forget request'),
         'isDefault' => TRUE,
         'icon' => 'fa-envelope-open',
         'subName' => 'register',
       ],
-      [
+      'forget' => [
         'type' => 'done',
         'name' => ts('Force forget'),
         'isDefault' => FALSE,
@@ -65,6 +65,22 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     ));
     $this->statusId = (int) $result['values'][0]['status'];
     $this->subName = $this->controller->_actionName[1];
+    switch ($this->statusId) {
+      case CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE:
+        break;
+
+      case CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE:
+        $this->disableRegister();
+        break;
+
+      case CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::TOO_MANY_REQUESTS_VALUE:
+        $this->disableRegister();
+        $this->disableForget();
+        break;
+    }
 
     $this->assign('statusId', $this->statusId);
     $this->assign('subName', $this->subName);
@@ -101,6 +117,23 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     }
 
     CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]));
+  }
+
+  private function disableForget() {
+    $this->disableButton('forget');
+  }
+
+  private function disableRegister() {
+    $this->disableButton('register');
+  }
+
+  private function disableButton($type) {
+    if (CRM_Utils_Array::value('js', $this->buttons[$type])) {
+      $this->buttons[$type]['js'] = array_merge($this->buttons[$type]['js'], ['disabled' => 'disabled']);
+    }
+    else {
+      $this->buttons[$type]['js'] = ['disabled' => 'disabled'];
+    }
   }
 
 }
