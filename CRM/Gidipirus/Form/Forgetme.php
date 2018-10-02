@@ -59,28 +59,10 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   public function preProcess() {
     $this->contactId = CRM_Utils_Request::retrieve('cid', 'Positive', $this, TRUE);
     $this->activityId = CRM_Utils_Request::retrieve('aid', 'Positive', $this, FALSE);
-    $result = civicrm_api3('Gidipirus', 'status', array(
-      'sequential' => 1,
-      'contact_id' => $this->contactId,
-    ));
-    $this->statusId = (int) $result['values'][0]['status'];
     $this->subName = $this->controller->_actionName[1];
-    switch ($this->statusId) {
-      case CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE:
-        break;
 
-      case CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE:
-        $this->disableRegister();
-        break;
-
-      case CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::TOO_MANY_REQUESTS_VALUE:
-        $this->disableRegister();
-        $this->disableForget();
-        break;
-    }
+    $this->statusId = $this->getStatus($this->contactId);
+    $this->setButtonsState($this->statusId);
 
     $this->assign('statusId', $this->statusId);
     $this->assign('subName', $this->subName);
@@ -107,16 +89,28 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     return $defaults;
   }
 
+  /**
+   * @throws \CiviCRM_API3_Exception
+   */
   public function postProcess() {
+    $channel = $this->_submitValues['request_channel'];
+    $requestDate = $this->_submitValues['request_date'];
     switch ($this->subName) {
       case 'submit':
+        $result = $this->register($this->contactId, $channel, $requestDate);
+        if ($result) {
+          CRM_Core_Session::setStatus(E::ts('Registered request'), 'Gidipirus', 'success');
+        }
+        else {
+          CRM_Core_Session::setStatus(E::ts('There is a problem with registering request'), 'Gidipirus');
+        }
         break;
 
       case 'done':
         break;
     }
-
-    CRM_Core_Session::singleton()->pushUserContext(CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]));
+    $url = CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]);
+    CRM_Utils_System::redirect($url);
   }
 
   private function disableForget() {
@@ -134,6 +128,63 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     else {
       $this->buttons[$type]['js'] = ['disabled' => 'disabled'];
     }
+  }
+
+  /**
+   * @param $contactId
+   *
+   * @return int
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function getStatus($contactId) {
+    $result = civicrm_api3('Gidipirus', 'status', [
+      'sequential' => 1,
+      'contact_id' => $contactId,
+    ]);
+    return (int) $result['values'][0]['status'];
+  }
+
+  /**
+   * @param int $statusId
+   */
+  private function setButtonsState($statusId) {
+    switch ($statusId) {
+      case CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE:
+        break;
+
+      case CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE:
+        $this->disableRegister();
+        break;
+
+      case CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::TOO_MANY_REQUESTS_VALUE:
+        $this->disableRegister();
+        $this->disableForget();
+        break;
+    }
+  }
+
+  /**
+   * @param int $contactId
+   * @param string $channel
+   * @param string $requestedDate
+   * @param int $parentActivityId
+   *
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function register($contactId, $channel, $requestedDate, $parentActivityId = 0) {
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => $contactId,
+      'channel' => $channel,
+      'requested_date' => $requestedDate,
+      'activity_parent_id' => $parentActivityId,
+    ];
+    $result = civicrm_api3('Gidipirus', 'register', $params);
+    return $result['values'][0]['result'];
   }
 
 }
