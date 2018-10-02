@@ -1,5 +1,6 @@
 {crmScope extensionKey=$extensionKey}
-  <h3>{$displayName}</h3>
+{capture assign=contactUrl}{crmURL p='civicrm/contact/view' q="reset=1&cid=`$contactId`"}{/capture}
+  <h3><a href="{$contactUrl}">{$displayName} (id {$contactId})</a></h3>
   <div class="form-item">
     <div class="crm-block crm-form-block">
 
