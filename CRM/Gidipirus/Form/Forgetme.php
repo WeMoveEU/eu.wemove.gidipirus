@@ -73,6 +73,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     $this->assign('subName', $this->subName);
     $this->assign('forgetmeValue', CRM_Gidipirus_Model_ForgetmeStatus::$value);
     $this->assign('forgetmeStatus', CRM_Gidipirus_Model_ForgetmeStatus::$nameToValue);
+    $this->assign('forgetmeDescription', CRM_Gidipirus_Model_ForgetmeStatus::$description);
     $this->assign('extensionKey', E::LONG_NAME);
   }
 

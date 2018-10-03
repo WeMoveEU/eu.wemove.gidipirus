@@ -18,6 +18,13 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const BLOCKED_VALUE = 50;
   const TOO_MANY_REQUESTS_VALUE = 60;
 
+  const READY_DESC = 'Contact does not have request (Forgetme Fullfillment)';
+  const IN_PROGRESS_DESC = 'Request is recorded and fullfilment date is in future';
+  const OBSOLETE_DESC = 'Request is recorded and fullfilment date is in past';
+  const COMPLETED_DESC = 'Forgetme processed successfully';
+  const BLOCKED_DESC = 'Contact is a donor and can not be processed';
+  const TOO_MANY_REQUESTS_DESC = 'Contact has too many requests';
+
   static $statusToValue = [
     self::READY => self::READY_VALUE,
     self::IN_PROGRESS => self::IN_PROGRESS_VALUE,
@@ -34,6 +41,15 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::COMPLETED_VALUE => self::COMPLETED,
     self::BLOCKED_VALUE => self::BLOCKED,
     self::TOO_MANY_REQUESTS_VALUE => self::TOO_MANY_REQUESTS,
+  ];
+
+  static $description = [
+    self::READY_VALUE => self::READY_DESC,
+    self::IN_PROGRESS_VALUE => self::IN_PROGRESS_DESC,
+    self::OBSOLETE_VALUE => self::OBSOLETE_DESC,
+    self::COMPLETED_VALUE => self::COMPLETED_DESC,
+    self::BLOCKED_VALUE => self::BLOCKED_DESC,
+    self::TOO_MANY_REQUESTS_VALUE => self::TOO_MANY_REQUESTS_DESC,
   ];
 
   static $nameToValue = [

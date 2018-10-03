@@ -6,7 +6,7 @@
 
       <div class="crm-section">
         <div class="label">Status</div>
-        <div class="content">{$forgetmeValue[$statusId]}</div>
+        <div class="content">{$forgetmeValue[$statusId]} ({$forgetmeDescription[$statusId]})</div>
         <div class="clear"></div>
       </div>
 
