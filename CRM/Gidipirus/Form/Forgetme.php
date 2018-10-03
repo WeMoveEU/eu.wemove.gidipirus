@@ -9,6 +9,8 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   private $fields = [];
   private $contactId;
   private $activityId;
+  private $requestedDate;
+  private $channel;
   private $subName;
   private $statusId;
 
@@ -63,6 +65,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
 
     $this->statusId = $this->getStatus($this->contactId);
     $this->setButtonsState($this->statusId);
+    $this->getFulfillmentRequest($this->contactId, $this->statusId);
 
     $this->assign('displayName', $this->getDisplayName($this->contactId));
     $this->assign('statusId', $this->statusId);
@@ -82,6 +85,12 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   }
 
   public function setDefaultValues() {
+    if ($this->requestedDate) {
+      $this->fields['request_date']['default'] = $this->requestedDate;
+    }
+    if ($this->channel) {
+      $this->fields['request_channel']['default'] = $this->channel;
+    }
     $defaults = array();
     foreach ($this->fields as $key => $setting) {
       if (array_key_exists('default', $setting)) {
@@ -92,8 +101,6 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   }
 
   /**
-   * @throws \CRM_Gidipirus_Exception_NoFulfillment
-   * @throws \CRM_Gidipirus_Exception_TooManyFulfillment
    * @throws \CiviCRM_API3_Exception
    */
   public function postProcess() {
@@ -188,6 +195,27 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         $this->disableRegister();
         $this->disableForget();
         break;
+    }
+  }
+
+  /**
+   * @param $contactId
+   * @param $statusId
+   *
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function getFulfillmentRequest($contactId, $statusId) {
+    $statuses = [
+      CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE,
+      CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE,
+    ];
+    $request = [];
+    if (in_array($statusId, $statuses)) {
+      $request = CRM_Gidipirus_Logic_Register::getRequest($contactId);
+    }
+    if ($request) {
+      $this->channel = $request['channel'];
+      $this->requestedDate = $request['requested_date'];
     }
   }
 

@@ -36,6 +36,38 @@ class CRM_Gidipirus_Logic_Register {
   }
 
   /**
+   * Get FulFillment Request for contact
+   *
+   * @param int $contactId
+   *
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function getRequest($contactId) {
+    $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
+    $query = "SELECT a.id, a.activity_date_time, a.location, REPLACE(a.subject, 'RequestedDate:', '') requested_date
+              FROM civicrm_activity a
+                JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
+              WHERE a.activity_type_id = %1 AND ac.contact_id = %2";
+    $params = [
+      1 => [$fulfillmentId, 'Integer'],
+      2 => [$contactId, 'Integer'],
+    ];
+    $dao = CRM_Core_DAO::executeQuery($query, $params);
+    if ($dao->N == 1) {
+      $dao->fetch();
+      return [
+        'id' => $dao->id,
+        'activity_date_time' => $dao->activity_date_time,
+        'requested_date' => $dao->requested_date,
+        'channel' => $dao->location,
+      ];
+    }
+
+    return [];
+  }
+
+  /**
    * @param int $contactId
    * @param string $channel
    * @param string $requestedDate
