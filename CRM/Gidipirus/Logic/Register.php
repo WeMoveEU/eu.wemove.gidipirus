@@ -79,7 +79,7 @@ class CRM_Gidipirus_Logic_Register {
    * @throws \CiviCRM_API3_Exception
    */
   public static function now($contactId, $channel, $requestedDate, $parentActivityId = 0) {
-    $fulfillmentDate = date('Ymd');
+    $fulfillmentDate = date('YmdHis');
     return self::add($contactId, $channel, $requestedDate, $fulfillmentDate, $parentActivityId);
   }
 
