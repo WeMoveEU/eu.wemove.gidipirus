@@ -271,7 +271,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
    * @param $result
    */
   private function setMessageForce($result) {
-    if ($result['result']) {
+    if ($result) {
       CRM_Core_Session::setStatus(E::ts('Registered request with fulfillment date set to now'), 'Gidipirus', 'success');
     }
     else {
