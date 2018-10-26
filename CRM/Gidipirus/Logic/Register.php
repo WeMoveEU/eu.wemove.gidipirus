@@ -76,12 +76,41 @@ class CRM_Gidipirus_Logic_Register {
    * @return array
    * @throws \CiviCRM_API3_Exception
    */
-  public static function add($contactId, $channel, $requestedDate, $parentActivityId = 0) {
+  public static function now($contactId, $channel, $requestedDate, $parentActivityId = 0) {
+    $fulfillmentDate = date('Ymd');
+    return self::add($contactId, $channel, $requestedDate, $fulfillmentDate, $parentActivityId);
+  }
+
+  /**
+   * @param int $contactId
+   * @param string $channel
+   * @param string $requestedDate
+   * @param int $parentActivityId
+   *
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function future($contactId, $channel, $requestedDate, $parentActivityId = 0) {
+    $fulfillmentDate = self::date($requestedDate);
+    return self::add($contactId, $channel, $requestedDate, $fulfillmentDate, $parentActivityId);
+  }
+
+  /**
+   * @param int $contactId
+   * @param string $channel
+   * @param string $requestedDate
+   * @param string $fullfillmentDate
+   * @param int $parentActivityId
+   *
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  private static function add($contactId, $channel, $requestedDate, $fullfillmentDate, $parentActivityId = 0) {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
     $params = [
       'sequential' => 1,
       'activity_type_id' => $fulfillmentId,
-      'activity_date_time' => self::date($requestedDate),
+      'activity_date_time' => $fullfillmentDate,
       'status_id' => 'Scheduled',
       'subject' => self::subject($requestedDate),
       'location' => $channel,

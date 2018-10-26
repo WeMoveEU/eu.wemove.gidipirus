@@ -55,7 +55,7 @@ function civicrm_api3_gidipirus_register(&$params) {
 
   $values = [];
   foreach ($contactIds as $contactId) {
-    $result = CRM_Gidipirus_Logic_Register::add($contactId, $channel, $requestedDate, $activityParentId);
+    $result = CRM_Gidipirus_Logic_Register::future($contactId, $channel, $requestedDate, $activityParentId);
     if ($result['result']) {
       CRM_Gidipirus_Logic_Email::holdEmails($contactId);
     }
