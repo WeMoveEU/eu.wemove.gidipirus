@@ -68,6 +68,8 @@ class CRM_Gidipirus_Logic_Register {
   }
 
   /**
+   * Register request with fulfillment date set to now so contact is ready to anonymize
+   *
    * @param int $contactId
    * @param string $channel
    * @param string $requestedDate
@@ -82,6 +84,8 @@ class CRM_Gidipirus_Logic_Register {
   }
 
   /**
+   * Register request with fulfillment date based on configuration scheduled days
+   *
    * @param int $contactId
    * @param string $channel
    * @param string $requestedDate
@@ -161,6 +165,13 @@ class CRM_Gidipirus_Logic_Register {
     return !!$result['count'];
   }
 
+  /**
+   * Calculate fulfillment date based on requested date and scheduled days from configuration
+   *
+   * @param string $requestedDate
+   *
+   * @return string
+   */
   private static function date($requestedDate) {
     $scheduledDays = CRM_Gidipirus_Settings::scheduledDays();
     $rd = substr(str_replace('-', '', $requestedDate), 0, 8);
@@ -168,6 +179,13 @@ class CRM_Gidipirus_Logic_Register {
     return $dt->modify('+' . $scheduledDays . ' days')->format('Y-m-d');
   }
 
+  /**
+   * Prepare subject for request activity
+   *
+   * @param string $requestedDate
+   *
+   * @return string
+   */
   private static function subject($requestedDate) {
     $rd = substr(str_replace('-', '', $requestedDate), 0, 8);
     $dt = DateTime::createFromFormat('Ymd', $rd);
