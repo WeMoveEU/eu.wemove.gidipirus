@@ -178,11 +178,10 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         break;
 
       case CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE:
         $this->disableRegister();
-        $this->disableForce();
         break;
 
+      case CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE:
       case CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE:
       case CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE:
       case CRM_Gidipirus_Model_ForgetmeStatus::TOO_MANY_REQUESTS_VALUE:
