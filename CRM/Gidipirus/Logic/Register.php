@@ -166,6 +166,24 @@ class CRM_Gidipirus_Logic_Register {
   }
 
   /**
+   * Set fulfillment date to now
+   *
+   * @param int $requestId Id of Forgetme Fulfillment request activity
+   *
+   * @return bool
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function setDateNow($requestId) {
+    $params = [
+      'sequential' => 1,
+      'id' => $requestId,
+      'activity_date_time' => date('YmdHis'),
+    ];
+    $result = civicrm_api3('Activity', 'create', $params);
+    return !!$result['count'];
+  }
+
+  /**
    * Calculate fulfillment date based on requested date and scheduled days from configuration
    *
    * @param string $requestedDate

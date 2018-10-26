@@ -55,11 +55,25 @@ function civicrm_api3_gidipirus_force(&$params) {
 
   $values = [];
   foreach ($contactIds as $contactId) {
-    $result = CRM_Gidipirus_Logic_Register::now($contactId, $channel, $requestedDate, $activityParentId);
-    if ($result['result']) {
-      CRM_Gidipirus_Logic_Email::holdEmails($contactId);
+    try {
+      $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId);
+      $setDate = CRM_Gidipirus_Logic_Register::setDateNow($requestId);
+      $values[$contactId] = [
+        'result' => (int) $setDate,
+      ];
+    } catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
+      $result = CRM_Gidipirus_Logic_Register::now($contactId, $channel, $requestedDate, $activityParentId);
+      if ($result['result']) {
+        CRM_Gidipirus_Logic_Email::holdEmails($contactId);
+      }
+      $values[$contactId] = $result;
     }
-    $values[$contactId] = $result;
+    catch (CRM_Extension_Exception $exception) {
+      $values[$contactId] = [
+        'result' => 0,
+        'error' => $exception->getMessage(),
+      ];
+    }
   }
   $extraReturnValues = array(
     'time' => microtime(TRUE) - $start,
