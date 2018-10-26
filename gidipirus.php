@@ -154,6 +154,15 @@ function gidipirus_civicrm_summaryActions(&$actions, $contactID) {
 }
 
 /**
+ * Implements hook_civicrm_pageRun().
+ */
+function gidipirus_civicrm_pageRun(&$page) {
+  if (is_a($page, 'CRM_Activity_Page_Tab')) {
+    CRM_Core_Resources::singleton()->addScriptFile(E::LONG_NAME, 'js/activity-links.js');
+  }
+}
+
+/**
  * Implements hook_civicrm_navigationMenu().
  *
  * @link http://wiki.civicrm.org/confluence/display/CRMDOC/hook_civicrm_navigationMenu
