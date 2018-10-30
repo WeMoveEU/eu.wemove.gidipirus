@@ -114,12 +114,12 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     $requestDate = $this->_submitValues['request_date'];
     switch ($this->subName) {
       case 'submit':
-        $result = $this->register($this->contactId, $channel, $requestDate);
+        $result = $this->register($this->contactId, $channel, $requestDate, $this->activityId);
         $this->setMessageRegister($result);
         break;
 
       case 'done':
-        $result = $this->force($this->contactId, $channel, $requestDate);
+        $result = $this->force($this->contactId, $channel, $requestDate, $this->activityId);
         $this->setMessageForce($result);
         break;
     }
