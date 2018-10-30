@@ -11,6 +11,23 @@
       </div>
 
       <div class="crm-section">
+        <div class="label">Request source</div>
+        <div class="content">
+          {if $activity.id}
+            {capture assign=activityUrl}
+              {crmURL
+                p='civicrm/contact/view/activity'
+                q="atype=12&action=view&reset=1&id=`$activity.id`&cid=`$contactId`&context=activity&searchContext=activity"}
+            {/capture}
+            <a href="{$activityUrl}">Inbound Email on {$activity.activity_date_time} with subject "{$activity.subject}"</a>
+          {else}
+            ---
+          {/if}
+        </div>
+        <div class="clear"></div>
+      </div>
+
+      <div class="crm-section">
         <div class="label">{$form.request_date.label}</div>
         <div class="content">{$form.request_date.html}</div>
         <div class="clear"></div>

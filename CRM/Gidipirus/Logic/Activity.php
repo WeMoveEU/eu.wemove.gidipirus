@@ -31,4 +31,23 @@ class CRM_Gidipirus_Logic_Activity {
     }
   }
 
+  /**
+   * @param int $activityId
+   *
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function get($activityId) {
+    $params = [
+      'sequential' => 1,
+      'id' => $activityId,
+    ];
+    $result = civicrm_api3('Activity', 'get', $params);
+    if ($result['count']) {
+      return $result['values'][0];
+    }
+
+    return [];
+  }
+
 }

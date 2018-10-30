@@ -67,6 +67,11 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     $this->setButtonsState($this->statusId);
     $this->getFulfillmentRequest($this->contactId, $this->statusId);
 
+    if ($this->activityId) {
+      $activity = CRM_Gidipirus_Logic_Activity::get($this->activityId);
+      $this->assign('activity', $activity);
+    }
+
     $this->assign('displayName', $this->getDisplayName($this->contactId));
     $this->assign('statusId', $this->statusId);
     $this->assign('contactId', $this->contactId);
