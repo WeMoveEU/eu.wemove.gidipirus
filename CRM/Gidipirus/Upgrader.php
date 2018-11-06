@@ -29,6 +29,17 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
 
     CRM_Gidipirus_Settings::scheduledDays();
 
+    $params = [
+      'sequential' => 1,
+      'api_entity' => "Gidipirus",
+      'api_action' => "cleanup",
+      'run_frequency' => "Hourly",
+      'parameters' => "",
+      'name' => "Forget all contacts that are due to be forgotten (based on activity_date_time)",
+      'is_active' => 0,
+    ];
+    civicrm_api3('Job', 'create', $params);
+
     return TRUE;
   }
 
