@@ -35,8 +35,8 @@ function civicrm_api3_gidipirus_status(&$params) {
   else {
     $query = "SELECT
                 CASE
-                  WHEN af.status_id = 1 AND DATE_FORMAT(af.activity_date_time, '%Y-%m-%d') >= CURRENT_DATE THEN %3
-                  WHEN af.status_id = 1 AND DATE_FORMAT(af.activity_date_time, '%Y-%m-%d') < CURRENT_DATE THEN %4
+                  WHEN af.status_id = 1 AND af.activity_date_time >= NOW() THEN %3
+                  WHEN af.status_id = 1 AND af.activity_date_time < NOW() THEN %4
                   WHEN af.status_id = 2 THEN %5
                 END forgetme_status
               FROM civicrm_activity af
