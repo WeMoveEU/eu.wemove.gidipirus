@@ -42,6 +42,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         'isDefault' => TRUE,
         'icon' => 'fa-envelope-open',
         'subName' => 'register',
+        'js' => ['onclick' => "return confirm('Do you want to register forget request?');"],
       ],
       'force' => [
         'type' => 'done',
@@ -49,6 +50,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         'isDefault' => FALSE,
         'icon' => 'fa-eraser',
         'subName' => 'force',
+        'js' => ['onclick' => "return confirm('Do you want to force forget?');"],
       ],
     ];
     parent::__construct($state, $action, $method, $name);
