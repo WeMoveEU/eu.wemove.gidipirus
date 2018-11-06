@@ -36,6 +36,7 @@ class CRM_Gidipirus_Logic_Forget {
     $stats = [
       'updated' => 0,
       'not_updated' => 0,
+      'count' => count($values),
     ];
     foreach ($values as $v) {
       if ($v['result']) {

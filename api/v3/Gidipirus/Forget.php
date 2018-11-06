@@ -32,11 +32,13 @@ function civicrm_api3_gidipirus_forget(&$params) {
       $result = CRM_Gidipirus_Logic_Forget::anonymise($contactId);
       CRM_Gidipirus_Logic_Register::complete($requestId);
       $values[$contactId] = [
+        'id' => $contactId,
         'result' => $result,
       ];
     }
     catch (CRM_Extension_Exception $exception) {
       $values[$contactId] = [
+        'id' => $contactId,
         'result' => 0,
         'error' => $exception->getMessage(),
       ];

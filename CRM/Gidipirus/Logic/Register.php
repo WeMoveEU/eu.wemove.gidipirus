@@ -137,11 +137,13 @@ class CRM_Gidipirus_Logic_Register {
     $result = civicrm_api3('Activity', 'create', $params);
     if ($result['id']) {
       return [
+        'id' => $contactId,
         'result' => 1,
         'activity_id' => $result['id'],
       ];
     }
     return [
+      'id' => $contactId,
       'result' => 0,
     ];
   }

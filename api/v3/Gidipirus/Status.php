@@ -65,6 +65,7 @@ function civicrm_api3_gidipirus_status(&$params) {
 
   $values = [
     $contactId => [
+      'id' => $contactId,
       'status' => $forgetmeStatus,
     ],
   ];

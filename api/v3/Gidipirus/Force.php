@@ -59,6 +59,7 @@ function civicrm_api3_gidipirus_force(&$params) {
       $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId);
       $setDate = CRM_Gidipirus_Logic_Register::setDateNow($requestId);
       $values[$contactId] = [
+        'id' => $contactId,
         'result' => (int) $setDate,
       ];
     } catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
@@ -70,6 +71,7 @@ function civicrm_api3_gidipirus_force(&$params) {
     }
     catch (CRM_Extension_Exception $exception) {
       $values[$contactId] = [
+        'id' => $contactId,
         'result' => 0,
         'error' => $exception->getMessage(),
       ];
