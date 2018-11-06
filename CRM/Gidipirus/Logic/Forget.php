@@ -25,4 +25,27 @@ class CRM_Gidipirus_Logic_Forget {
     return 1;
   }
 
+  /**
+   * Calculate stats based on values from forget api action
+   *
+   * @param array $values
+   *
+   * @return array
+   */
+  public static function stats($values) {
+    $stats = [
+      'updated' => 0,
+      'not_updated' => 0,
+    ];
+    foreach ($values as $v) {
+      if ($v['result']) {
+        $stats['updated']++;
+      }
+      else {
+        $stats['not_updated']++;
+      }
+    }
+    return $stats;
+  }
+
 }

@@ -42,23 +42,7 @@ function civicrm_api3_gidipirus_forget(&$params) {
       ];
     }
   }
-  $stats = stats($values);
+  $stats = CRM_Gidipirus_Logic_Forget::stats($values);
   $extraReturnValues = array_merge(['time' => microtime(TRUE) - $start], $stats);
   return civicrm_api3_create_success($values, $params, 'Gidipirus', 'status', $blank, $extraReturnValues);
-}
-
-function stats($values) {
-  $stats = [
-    'updated' => 0,
-    'not_updated' => 0,
-  ];
-  foreach ($values as $v) {
-    if ($v['result']) {
-      $stats['updated']++;
-    }
-    else {
-      $stats['not_updated']++;
-    }
-  }
-  return $stats;
 }
