@@ -37,7 +37,7 @@ function civicrm_api3_gidipirus_forget(&$params) {
   $values = [];
   foreach ($contactIds as $contactId) {
     try {
-      $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId);
+      $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId, TRUE);
       if ($dryRun) {
         $result = 1;
       }

@@ -6,15 +6,18 @@ class CRM_Gidipirus_Logic_Register {
    * Check whether contact has FulFillment Request and returns activity id.
    *
    * @param int $contactId
+   * @param bool $isReadyToForget Check if contact is ready to forget, when
+   *   date is in the past
    *
    * @return int
    * @throws \CRM_Gidipirus_Exception_NoFulfillment
    * @throws \CRM_Gidipirus_Exception_TooManyFulfillment
+   * @throws \CRM_Gidipirus_Exception_NotReadyToForget
    * @throws \CiviCRM_API3_Exception
    */
-  public static function hasRequest($contactId) {
+  public static function hasRequest($contactId, $isReadyToForget = FALSE) {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
-    $query = "SELECT a.id
+    $query = "SELECT a.id, IF(activity_date_time < NOW(), 1, 0) is_ready
               FROM civicrm_activity a
                 JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
               WHERE a.activity_type_id = %1 AND ac.contact_id = %2";
@@ -28,6 +31,11 @@ class CRM_Gidipirus_Logic_Register {
     }
     elseif ($dao->N == 1) {
       $dao->fetch();
+      if ($isReadyToForget) {
+        if (!$dao->is_ready) {
+          throw new CRM_Gidipirus_Exception_NotReadyToForget('Contact is not ready to forget because of fulfillment date is in the past');
+        }
+      }
       return $dao->id;
     }
     else {
