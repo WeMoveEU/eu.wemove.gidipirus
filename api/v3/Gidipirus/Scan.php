@@ -61,7 +61,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
   $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
   $contactIds = [];
   while ($dao->fetch()) {
-    $contactIds[] = $dao->contact_id;
+    $contactIds[$dao->id] = $dao->id;
   }
   $values = [];
   if ($contactIds) {
