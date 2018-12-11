@@ -5,8 +5,8 @@
     <div class="crm-block crm-form-block">
 
       <div class="crm-section">
-        <div class="label">Status</div>
-        <div class="content">{$forgetmeValue[$statusId]} ({$forgetmeDescription[$statusId]})</div>
+        <div class="label"><strong>Status</strong></div>
+        <div class="content"><strong>{$forgetmeValue[$statusId]}:</strong> {$forgetmeDescription[$statusId]}</div>
         <div class="clear"></div>
       </div>
 
