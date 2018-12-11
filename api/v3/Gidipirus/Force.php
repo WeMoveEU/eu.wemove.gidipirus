@@ -30,6 +30,14 @@ function _civicrm_api3_gidipirus_force_spec(&$spec) {
     'type' => CRM_Utils_Type::T_INT,
     'api.required' => 0,
   ];
+  $spec['dry_run'] = [
+    'name' => 'dry_run',
+    'title' => E::ts('Dry run'),
+    'description' => E::ts('Only checking whether contact has valid Forgetme Fulfillment activity'),
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 0,
+    'api.default' => FALSE,
+  ];
 }
 
 /**
@@ -42,6 +50,7 @@ function _civicrm_api3_gidipirus_force_spec(&$spec) {
  */
 function civicrm_api3_gidipirus_force(&$params) {
   $start = microtime(TRUE);
+  $dryRun = (bool) $params['dry_run'];
   $contactIds = $params['contact_ids'];
   if (!is_array($contactIds)) {
     $contactIds = [$contactIds];
@@ -57,15 +66,25 @@ function civicrm_api3_gidipirus_force(&$params) {
   foreach ($contactIds as $contactId) {
     try {
       $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId);
-      $setDate = CRM_Gidipirus_Logic_Register::setDateNow($requestId);
+      if ($dryRun) {
+        $setDate = 1;
+      }
+      else {
+        $setDate = CRM_Gidipirus_Logic_Register::setDateNow($requestId);
+      }
       $values[$contactId] = [
         'id' => $contactId,
         'result' => (int) $setDate,
       ];
     } catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
-      $result = CRM_Gidipirus_Logic_Register::now($contactId, $channel, $requestedDate, $activityParentId);
-      if ($result['result']) {
-        CRM_Gidipirus_Logic_Email::holdEmails($contactId);
+      if ($dryRun) {
+        $result = 1;
+      }
+      else {
+        $result = CRM_Gidipirus_Logic_Register::now($contactId, $channel, $requestedDate, $activityParentId);
+        if ($result['result']) {
+          CRM_Gidipirus_Logic_Email::holdEmails($contactId);
+        }
       }
       $values[$contactId] = $result;
     }
