@@ -71,6 +71,8 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
 
     if ($this->activityId) {
       $activity = CRM_Gidipirus_Logic_Activity::get($this->activityId);
+      $this->requestedDate = $activity['activity_date_time'];
+      $this->channel = CRM_Gidipirus_Model_RequestChannel::EMAIL;
       $this->assign('activity', $activity);
     }
 
