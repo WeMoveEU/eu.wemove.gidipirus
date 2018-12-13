@@ -87,6 +87,12 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
+    if ($this->channel == CRM_Gidipirus_Model_RequestChannel::EXPIRED) {
+      $this->fields['request_channel']['options'] = array_merge(
+        CRM_Gidipirus_Model_RequestChannel::$values,
+        [CRM_Gidipirus_Model_RequestChannel::EXPIRED => CRM_Gidipirus_Model_RequestChannel::EXPIRED]
+      );
+    }
     foreach ($this->fields as $key => $field) {
       $this->add($field['type'], $key, $field['label'], ['' => '- select -'] + $field['options'], $field['required'], @$field['extra']);
     }
