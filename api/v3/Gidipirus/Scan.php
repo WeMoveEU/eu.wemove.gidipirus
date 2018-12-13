@@ -72,8 +72,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
       'requested_date' => date('YmdHis'),
       'dry_run' => $dryRun,
     ];
-    // todo change to force?
-    $result = civicrm_api3('Gidipirus', 'register', $registerParams);
+    $result = civicrm_api3('Gidipirus', 'force', $registerParams);
     $values = $result['values'];
   }
   $stats = CRM_Gidipirus_Logic_Forget::stats($values);
