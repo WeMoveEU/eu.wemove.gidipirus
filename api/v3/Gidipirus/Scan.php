@@ -2,6 +2,14 @@
 use CRM_Gidipirus_ExtensionUtil as E;
 
 function _civicrm_api3_gidipirus_scan_spec(&$spec) {
+  $spec['limit'] = [
+    'name' => 'limit',
+    'title' => E::ts('Limit'),
+    'description' => E::ts('How many contacts will be anonymised'),
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+    'api.default' => 100,
+  ];
   $spec['dry_run'] = [
     'name' => 'dry_run',
     'title' => E::ts('Dry run'),
@@ -23,8 +31,12 @@ function _civicrm_api3_gidipirus_scan_spec(&$spec) {
 function civicrm_api3_gidipirus_scan(&$params) {
   $start = microtime(TRUE);
   $dryRun = (bool) $params['dry_run'];
+  $limit = (int) $params['limit'];
+  if (!$limit) {
+    $limit = 100;
+  }
   $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
-  $groupId = 42;
+  $groupId = 42; // todo move to settings
 
   $query = "SELECT
               c.id
@@ -45,18 +57,19 @@ function civicrm_api3_gidipirus_scan(&$params) {
                 SELECT ac2.contact_id, ac2.activity_id
                 FROM civicrm_activity_contact ac2
                   JOIN civicrm_activity a2 ON a2.id = ac2.activity_id
-                WHERE a2.activity_type_id = %2
+                WHERE a2.activity_type_id = %3
               ) request ON request.contact_id = c.id
-              LEFT JOIN civicrm_group_contact gc ON gc.group_id = %1 AND gc.status = 'Added' AND gc.contact_id = c.id
+              LEFT JOIN civicrm_group_contact gc ON gc.group_id = %2 AND gc.status = 'Added' AND gc.contact_id = c.id
             WHERE c.contact_type = 'Individual'
                 AND donors.contact_id IS NULL
                 AND request.contact_id IS NULL
                 AND gc.id IS NULL
                 AND latest_ac.latest_date_time < (CURRENT_DATE() - INTERVAL 1 YEAR)
-            LIMIT 50"; // todo move limit to parameter
+            LIMIT %1";
   $queryParams = [
-    1 => [$groupId, 'Integer'],
-    2 => [$fulfillmentId, 'Integer'],
+    1 => [$limit, 'Integer'],
+    2 => [$groupId, 'Integer'],
+    3 => [$fulfillmentId, 'Integer'],
   ];
   $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
   $contactIds = [];
