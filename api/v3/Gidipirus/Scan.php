@@ -70,7 +70,6 @@ function civicrm_api3_gidipirus_scan(&$params) {
       'contact_ids' => $contactIds,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EXPIRED,
       'requested_date' => date('YmdHis'),
-      // todo implement dry_run (register or force does not have dry_run param!)
       'dry_run' => $dryRun,
     ];
     // todo change to force?

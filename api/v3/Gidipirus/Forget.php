@@ -39,15 +39,15 @@ function civicrm_api3_gidipirus_forget(&$params) {
     try {
       $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId, TRUE);
       if ($dryRun) {
-        $result = 1;
+        $valueResult = 1;
       }
       else {
-        $result = CRM_Gidipirus_Logic_Forget::anonymise($contactId);
+        $valueResult = CRM_Gidipirus_Logic_Forget::anonymise($contactId);
         CRM_Gidipirus_Logic_Register::complete($requestId);
       }
       $values[$contactId] = [
         'id' => $contactId,
-        'result' => $result,
+        'result' => $valueResult,
       ];
     }
     catch (CRM_Extension_Exception $exception) {

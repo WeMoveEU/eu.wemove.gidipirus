@@ -78,7 +78,10 @@ function civicrm_api3_gidipirus_force(&$params) {
       ];
     } catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
       if ($dryRun) {
-        $result = 1;
+        $result = [
+          'id' => $contactId,
+          'result' => 1,
+        ];
       }
       else {
         $result = CRM_Gidipirus_Logic_Register::now($contactId, $channel, $requestedDate, $activityParentId);
