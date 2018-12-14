@@ -123,6 +123,36 @@ function gidipirus_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
   _gidipirus_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
+
+/**
+ * Implements hook_civicrm_permission().
+ */
+function gidipirus_civicrm_permission(&$permissions) {
+  $permissions += [
+    'access gidipirus' => [
+      E::ts('Gidipirus: Access'),
+      E::ts('Access to Gidipirus'),
+    ],
+    'administer gidipirus' => [
+      E::ts('Gidipirus: Administer'),
+      E::ts('Administer to Gidipirus'),
+    ],
+  ];
+}
+
+/**
+ * Implements hook_civicrm_alterAPIPermissions().
+ */
+function gidipirus_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
+  $permissions['gidipirus']['status'] = ['access gidipirus'];
+  $permissions['gidipirus']['register'] = ['access gidipirus'];
+  $permissions['gidipirus']['force'] = ['access gidipirus'];
+
+  $permissions['gidipirus']['forget'] = ['administer gidipirus'];
+  $permissions['gidipirus']['cleanup'] = ['administer gidipirus'];
+  $permissions['gidipirus']['scan'] = ['administer gidipirus'];
+}
+
 function gidipirus_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
   if ('Contact' == $objectName) {
     switch ($op) {
