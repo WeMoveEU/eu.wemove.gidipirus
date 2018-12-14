@@ -10,6 +10,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const COMPLETED = 'Completed';
   const BLOCKED = 'Blocked';
   const TOO_MANY_REQUESTS = 'Too Many Requests';
+  const NOT_APPLICABLE = 'Not Applicable';
 
   const READY_VALUE = 10;
   const IN_PROGRESS_VALUE = 20;
@@ -17,6 +18,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const COMPLETED_VALUE = 40;
   const BLOCKED_VALUE = 50;
   const TOO_MANY_REQUESTS_VALUE = 60;
+  const NOT_APPLICABLE_VALUE = 70;
 
   const READY_DESC = 'Contact does not have request (Forgetme Fullfillment)';
   const IN_PROGRESS_DESC = 'Request is recorded and fullfilment date is in future';
@@ -24,6 +26,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const COMPLETED_DESC = 'Forgetme processed successfully';
   const BLOCKED_DESC = 'Contact is a donor and can not be processed';
   const TOO_MANY_REQUESTS_DESC = 'Contact has too many requests';
+  const NOT_APPLICABLE_DESC = 'Contact type is not an Individual';
 
   static $statusToValue = [
     self::READY => self::READY_VALUE,
@@ -32,6 +35,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::COMPLETED => self::COMPLETED_VALUE,
     self::BLOCKED => self::BLOCKED_VALUE,
     self::TOO_MANY_REQUESTS => self::TOO_MANY_REQUESTS_VALUE,
+    self::NOT_APPLICABLE => self::NOT_APPLICABLE_VALUE,
   ];
 
   static $value = [
@@ -41,6 +45,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::COMPLETED_VALUE => self::COMPLETED,
     self::BLOCKED_VALUE => self::BLOCKED,
     self::TOO_MANY_REQUESTS_VALUE => self::TOO_MANY_REQUESTS,
+    self::NOT_APPLICABLE_VALUE => self::NOT_APPLICABLE,
   ];
 
   static $description = [
@@ -50,6 +55,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::COMPLETED_VALUE => self::COMPLETED_DESC,
     self::BLOCKED_VALUE => self::BLOCKED_DESC,
     self::TOO_MANY_REQUESTS_VALUE => self::TOO_MANY_REQUESTS_DESC,
+    self::NOT_APPLICABLE_VALUE => self::NOT_APPLICABLE_DESC,
   ];
 
   static $nameToValue = [
@@ -59,8 +65,8 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     'completed' => self::COMPLETED_VALUE,
     'blocked' => self::BLOCKED_VALUE,
     'toomanyrequest' => self::TOO_MANY_REQUESTS_VALUE,
+    'notapplicable' => self::NOT_APPLICABLE_VALUE,
   ];
-
 
   /**
    * Get Forgetme status - Ready
@@ -158,6 +164,23 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     $cache = Civi::cache()->get($key);
     if (!isset($cache)) {
       $id = self::set(self::TOO_MANY_REQUESTS);
+      Civi::cache()->set($key, $id);
+      return $id;
+    }
+    return $cache;
+  }
+
+  /**
+   * Get Forgetme status - Not applicable
+   *
+   * @return int|mixed
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function notApplicable() {
+    $key = __CLASS__ . __FUNCTION__;
+    $cache = Civi::cache()->get($key);
+    if (!isset($cache)) {
+      $id = self::set(self::NOT_APPLICABLE);
       Civi::cache()->set($key, $id);
       return $id;
     }

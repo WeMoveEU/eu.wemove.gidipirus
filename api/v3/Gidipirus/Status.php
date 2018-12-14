@@ -22,14 +22,22 @@ function _civicrm_api3_gidipirus_status_spec(&$spec) {
 function civicrm_api3_gidipirus_status(&$params) {
   $start = microtime(TRUE);
   $contactId = $params['contact_id'];
-  $queryDonor = "SELECT count(id) is_donor
-                 FROM civicrm_contribution
-                 WHERE contact_id = %1 AND contribution_status_id = 1";
-  $queryDonorParams = [
+  $queryContact = "SELECT
+                     c.contact_type, (
+                       SELECT count(ct.id)
+                       FROM civicrm_contribution ct
+                       WHERE contact_id = c.id AND contribution_status_id = 1) is_donor
+                   FROM civicrm_contact c
+                   WHERE c.id = %1";
+  $queryContactParams = [
     1 => [$contactId, 'Integer'],
   ];
-  $isDonor = CRM_Core_DAO::singleValueQuery($queryDonor, $queryDonorParams);
-  if ($isDonor) {
+  $daoContact = CRM_Core_DAO::executeQuery($queryContact, $queryContactParams);
+  $daoContact->fetch();
+  if ($daoContact->contact_type != 'Individual') {
+    $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::NOT_APPLICABLE_VALUE;
+  }
+  else if ($daoContact->is_donor) {
     $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE;
   }
   else {
@@ -62,6 +70,7 @@ function civicrm_api3_gidipirus_status(&$params) {
     }
     $dao->free();
   }
+  $daoContact->free();
 
   $values = [
     $contactId => [
