@@ -129,11 +129,11 @@ function gidipirus_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  */
 function gidipirus_civicrm_permission(&$permissions) {
   $permissions += [
-    'access gidipirus' => [
+    'Access Gidipirus' => [
       E::ts('Gidipirus: Access'),
       E::ts('Access to Gidipirus'),
     ],
-    'administer gidipirus' => [
+    'Administer Gidipirus' => [
       E::ts('Gidipirus: Administer'),
       E::ts('Administer to Gidipirus'),
     ],
@@ -144,13 +144,13 @@ function gidipirus_civicrm_permission(&$permissions) {
  * Implements hook_civicrm_alterAPIPermissions().
  */
 function gidipirus_civicrm_alterAPIPermissions($entity, $action, &$params, &$permissions) {
-  $permissions['gidipirus']['status'] = ['access gidipirus'];
-  $permissions['gidipirus']['register'] = ['access gidipirus'];
-  $permissions['gidipirus']['force'] = ['access gidipirus'];
+  $permissions['gidipirus']['status'] = ['Access Gidipirus'];
+  $permissions['gidipirus']['register'] = ['Access Gidipirus'];
+  $permissions['gidipirus']['force'] = ['Access Gidipirus'];
 
-  $permissions['gidipirus']['forget'] = ['administer gidipirus'];
-  $permissions['gidipirus']['cleanup'] = ['administer gidipirus'];
-  $permissions['gidipirus']['scan'] = ['administer gidipirus'];
+  $permissions['gidipirus']['forget'] = ['Administer Gidipirus'];
+  $permissions['gidipirus']['cleanup'] = ['Administer Gidipirus'];
+  $permissions['gidipirus']['scan'] = ['Administer Gidipirus'];
 }
 
 function gidipirus_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &$values) {
