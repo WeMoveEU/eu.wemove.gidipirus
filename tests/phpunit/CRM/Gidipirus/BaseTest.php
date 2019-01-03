@@ -15,6 +15,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
   protected static $emptyContactId;
   protected static $fullContactId;
   protected static $donorContactId;
+  protected static $contributionId;
 
   /**
    * @throws \CiviCRM_API3_Exception
@@ -128,13 +129,14 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
     ];
     $result = civicrm_api3('Contact', 'create', $params);
     self::$donorContactId = $result['id'];
-    civicrm_api3('Contribution', 'create', [
+    $result = civicrm_api3('Contribution', 'create', [
       'debug' => 1,
       'financial_type_id' => "Donation",
       'total_amount' => "66.6",
       'contact_id' => self::$donorContactId,
       'contribution_status_id' => "Completed",
     ]);
+    self::$contributionId = $result['id'];
   }
 
   /**
@@ -144,16 +146,23 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
     $params = [
       'sequential' => 1,
       'id' => self::$emptyContactId,
+      'skip_undelete' => 1,
     ];
     civicrm_api3('Contact', 'delete', $params);
     $params = [
       'sequential' => 1,
       'id' => self::$fullContactId,
+      'skip_undelete' => 1,
     ];
     civicrm_api3('Contact', 'delete', $params);
+
+    civicrm_api3('Contribution', 'delete', [
+      'id' => self::$contributionId,
+    ]);
     $params = [
       'sequential' => 1,
       'id' => self::$donorContactId,
+      'skip_undelete' => 1,
     ];
     civicrm_api3('Contact', 'delete', $params);
   }
