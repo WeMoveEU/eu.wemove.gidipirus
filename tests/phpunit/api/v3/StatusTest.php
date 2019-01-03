@@ -16,6 +16,12 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
     ];
     $result = $this->callAPISuccess('Gidipirus', 'status', $params);
     $this->assertEquals(CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE, $result['values'][0]['status']);
+    $params = [
+      'sequential' => 1,
+      'contact_id' => self::$fullContactId,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'status', $params);
+    $this->assertEquals(CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE, $result['values'][0]['status']);
   }
 
   /**

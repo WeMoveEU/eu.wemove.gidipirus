@@ -33,7 +33,7 @@ class CRM_Gidipirus_Logic_Register {
       $dao->fetch();
       if ($isReadyToForget) {
         if (!$dao->is_ready) {
-          throw new CRM_Gidipirus_Exception_NotReadyToForget('Contact is not ready to forget because of fulfillment date is in the past');
+          throw new CRM_Gidipirus_Exception_NotReadyToForget('Contact is not ready to forget because of fulfillment date is in the future');
         }
       }
       return $dao->id;
