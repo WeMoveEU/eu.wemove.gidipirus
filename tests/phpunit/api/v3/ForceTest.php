@@ -65,6 +65,35 @@ class api_v3_ForceTest extends CRM_Gidipirus_BaseTest {
   }
 
   /**
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function testRegisterAndForceReadyContact() {
+    self::emptyContact();
+    $requestedDate = new DateTime();
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => self::$emptyContactId,
+      'channel' => CRM_Gidipirus_Model_RequestChannel::PAPER_LETTER,
+      'requested_date' => $requestedDate->format('Y-m-d'),
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'register', $params);
+    $this->assertTrue($result['values'][0]['result'] == 1);
+    $this->assertGreaterThan(0, $result['values'][0]['activity_id']);
+    $activityRegisterId = $result['values'][0]['activity_id'];
+
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => self::$emptyContactId,
+      'channel' => CRM_Gidipirus_Model_RequestChannel::PAPER_LETTER,
+      'requested_date' => $requestedDate->format('Y-m-d'),
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'force', $params);
+    $this->assertTrue($result['values'][0]['result'] == 1);
+    $this->assertGreaterThan(0, $result['values'][0]['activity_id']);
+    $this->assertEquals($activityRegisterId, $result['values'][0]['activity_id']);
+  }
+
+  /**
    * Check if it's possible to register for donor contact.
    * "register" api action does not check ForgetMe status.
    */
