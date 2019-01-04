@@ -75,8 +75,10 @@ function civicrm_api3_gidipirus_force(&$params) {
       $values[$contactId] = [
         'id' => $contactId,
         'result' => (int) $setDate,
+        'activity_id' => $requestId,
       ];
-    } catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
+    }
+    catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
       if ($dryRun) {
         $result = [
           'id' => $contactId,
