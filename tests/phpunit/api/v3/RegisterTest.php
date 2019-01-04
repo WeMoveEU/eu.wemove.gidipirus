@@ -12,12 +12,13 @@ class api_v3_RegisterTest extends CRM_Gidipirus_BaseTest {
    * @throws \CiviCRM_API3_Exception
    */
   public function testRegisterReady() {
-    $requestedDate = date('Y-m-d');
+    $scheduledDays = CRM_Gidipirus_Settings::scheduledDays();
+    $requestedDate = new DateTime();
     $params = [
       'sequential' => 1,
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
-      'requested_date' => $requestedDate,
+      'requested_date' => $requestedDate->format('Y-m-d'),
     ];
     $result = $this->callAPISuccess('Gidipirus', 'register', $params);
     $activityId = $result['values'][0]['activity_id'];
@@ -33,11 +34,12 @@ class api_v3_RegisterTest extends CRM_Gidipirus_BaseTest {
       ]
     ]);
     $scheduledId = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Scheduled');
-    $this->assertEquals('RequestedDate:' . $requestedDate, $activity['values'][0]['subject']);
+    $this->assertEquals('RequestedDate:' . $requestedDate->format('Y-m-d'), $activity['values'][0]['subject']);
     $this->assertEquals(CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), $activity['values'][0]['activity_type_id']);
     $this->assertEquals($scheduledId, $activity['values'][0]['status_id']);
     $this->assertEquals(CRM_Gidipirus_Model_RequestChannel::EMAIL, $activity['values'][0]['location']);
     $this->assertEquals(2, $activity['values'][0]['api.ActivityContact.get']['count']);
+    $this->assertEquals($requestedDate->modify('+' . $scheduledDays . ' days')->format('Y-m-d'), substr($activity['values'][0]['activity_date_time'], 0, 10));
     foreach ($activity['values'][0]['api.ActivityContact.get']['values'] as $item) {
       if ($item['record_type_id'] == 2) {
         $this->assertEquals(self::$loggedUserId, $item['contact_id']);
