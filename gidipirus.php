@@ -158,7 +158,7 @@ function gidipirus_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &
     switch ($op) {
       case 'contact.selector.actions':
         $links[] = array(
-          'name' => E::ts('Forget Me'),
+          'name' => E::ts('Open ForgetMe form'),
           'url' => 'civicrm/gidipirus/forgetme',
           'qs' => 'cid=%%id%%',
           'title' => 'Forget Me',
@@ -173,7 +173,7 @@ function gidipirus_civicrm_links($op, $objectName, $objectId, &$links, &$mask, &
 
 function gidipirus_civicrm_summaryActions(&$actions, $contactID) {
   $actions['otherActions']['forgetme'] = [
-    'title' => E::ts("Forget Me"),
+    'title' => E::ts('Open ForgetMe form'),
     'weight' => 1000,
     'ref' => 'forgetme',
     'key' => 'forgetme',
