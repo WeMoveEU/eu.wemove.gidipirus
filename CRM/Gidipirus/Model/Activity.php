@@ -15,7 +15,10 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
     $key = __CLASS__ . '.' .  __FUNCTION__;
     $cache = Civi::cache()->get($key);
     if (!isset($cache)) {
-      $id = self::set(self::FORGETME_FULFILLMENT);
+      $options = [
+        'filter' => 1,
+      ];
+      $id = self::set(self::FORGETME_FULFILLMENT, $options);
       Civi::cache()->set($key, $id);
       return $id;
     }
@@ -43,12 +46,13 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
    * Get or create activity type
    *
    * @param $name
+   * @param $options
    *
    * @return int
    * @throws \CiviCRM_API3_Exception
    */
-  private static function set($name) {
-    return self::optionValue('activity_type', $name);
+  private static function set($name, $options = []) {
+    return self::optionValue('activity_type', $name, $options);
   }
 
 }
