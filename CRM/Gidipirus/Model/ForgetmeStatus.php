@@ -20,7 +20,7 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const TOO_MANY_REQUESTS_VALUE = 60;
   const NOT_APPLICABLE_VALUE = 70;
 
-  const READY_DESC = 'Contact does not have request (Forgetme Fullfillment)';
+  const READY_DESC = 'Contact does not have a registered request yet';
   const IN_PROGRESS_DESC = 'Request is recorded and fullfilment date is in future';
   const OBSOLETE_DESC = 'Request is recorded and fullfilment date is in past';
   const COMPLETED_DESC = 'Forgetme processed successfully';
