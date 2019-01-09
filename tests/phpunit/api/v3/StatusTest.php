@@ -60,7 +60,28 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
   /**
    * @throws \CiviCRM_API3_Exception
    */
-  public function testObsolete() {
+  public function testObsoleteNow() {
+    self::emptyContact();
+    $requestedDate = new DateTime();
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => self::$emptyContactId,
+      'channel' => CRM_Gidipirus_Model_RequestChannel::PERSONAL,
+      'requested_date' => $requestedDate->format('Y-m-d'),
+    ];
+    $result1 = $this->callAPISuccess('Gidipirus', 'force', $params);
+    $params = [
+      'sequential' => 1,
+      'contact_id' => self::$emptyContactId,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'status', $params);
+    $this->assertEquals(CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE, $result['values'][0]['status']);
+  }
+
+  /**
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function testObsoleteWaitSecond() {
     self::emptyContact();
     $requestedDate = new DateTime();
     $params = [

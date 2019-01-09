@@ -37,14 +37,14 @@ function civicrm_api3_gidipirus_status(&$params) {
   if ($daoContact->contact_type != 'Individual') {
     $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::NOT_APPLICABLE_VALUE;
   }
-  else if ($daoContact->is_donor) {
+  elseif ($daoContact->is_donor) {
     $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE;
   }
   else {
     $query = "SELECT
                 CASE
-                  WHEN af.status_id = 1 AND af.activity_date_time >= NOW() THEN %3
-                  WHEN af.status_id = 1 AND af.activity_date_time < NOW() THEN %4
+                  WHEN af.status_id = 1 AND af.activity_date_time > NOW() THEN %3
+                  WHEN af.status_id = 1 AND af.activity_date_time <= NOW() THEN %4
                   WHEN af.status_id = 2 THEN %5
                 END forgetme_status
               FROM civicrm_activity af
