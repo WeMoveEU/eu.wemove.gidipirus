@@ -30,9 +30,14 @@ function _civicrm_api3_gidipirus_forget_spec(&$spec) {
 function civicrm_api3_gidipirus_forget(&$params) {
   $start = microtime(TRUE);
   $dryRun = (bool) $params['dry_run'];
-  $contactIds = $params['contact_ids'];
-  if (!is_array($contactIds)) {
-    $contactIds = [$contactIds];
+  if (is_array($params['contact_ids']) && array_key_exists('IN', $params['contact_ids'])) {
+    $contactIds = $params['contact_ids']['IN'];
+  }
+  elseif (is_array($params['contact_ids'])) {
+    $contactIds = $params['contact_ids'];
+  }
+  else {
+    $contactIds = [$params['contact_ids']];
   }
   $values = [];
   foreach ($contactIds as $contactId) {
