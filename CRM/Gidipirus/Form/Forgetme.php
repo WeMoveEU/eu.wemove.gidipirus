@@ -35,22 +35,26 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         'order' => 20,
       ],
     ];
+    $registerName = E::ts('Forget within %1 days', [1 => CRM_Gidipirus_Settings::scheduledDays()]);
+    $registerQuestion = E::ts('Do you want to forget this contact within %1 days?', [1 => CRM_Gidipirus_Settings::scheduledDays()]);
+    $forceName = E::ts('Forget now');
+    $forceQuestion = E::ts('Do you want to forget this contact now? This means that within about 1 hour this contact will be forgotten.');
     $this->buttons = [
       'register' => [
         'type' => 'submit',
-        'name' => ts('Register forget request'),
+        'name' => $registerName,
         'isDefault' => TRUE,
         'icon' => 'fa-envelope-open',
         'subName' => 'register',
-        'js' => ['onclick' => "return confirm('Do you want to register forget request?');"],
+        'js' => ['onclick' => "return confirm(' " . $registerQuestion . "');"],
       ],
       'force' => [
         'type' => 'done',
-        'name' => ts('Force forget'),
+        'name' => $forceName,
         'isDefault' => FALSE,
         'icon' => 'fa-eraser',
         'subName' => 'force',
-        'js' => ['onclick' => "return confirm('Do you want to force forget?');"],
+        'js' => ['onclick' => "return confirm('" . $forceQuestion . "');"],
       ],
     ];
     parent::__construct($state, $action, $method, $name);
@@ -290,7 +294,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
       CRM_Core_Session::setStatus(E::ts('Registered request with fulfillment date set to now'), 'Gidipirus', 'success');
     }
     else {
-      CRM_Core_Session::setStatus(E::ts('There is a problem with force forgetting the contact: %1', [1 => $result['error']]), 'Gidipirus');
+      CRM_Core_Session::setStatus(E::ts('There is a problem with forgetting the contact now: %1', [1 => $result['error']]), 'Gidipirus');
     }
   }
 
