@@ -33,6 +33,9 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
   if (is_array($params['channels']) && array_key_exists('IN', $params['channels'])) {
     $channels = $params['channels']['IN'];
   }
+  elseif (is_array($params['channels'])) {
+    $channels = $params['channels'];
+  }
   elseif ($params['channels']) {
     $channels = explode(',', $params['channels']);
   }

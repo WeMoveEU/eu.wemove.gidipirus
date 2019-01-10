@@ -25,6 +25,13 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
     $params = [
       'sequential' => 1,
       'dry_run' => 1,
+      'channels' => CRM_Gidipirus_Model_RequestChannel::$valid,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'cleanup', $params);
+    $this->assertGreaterThan(0, $result['count']);
+    $params = [
+      'sequential' => 1,
+      'dry_run' => 1,
       'channels' => ['IN' => CRM_Gidipirus_Model_RequestChannel::$valid],
     ];
     $result = $this->callAPISuccess('Gidipirus', 'cleanup', $params);
