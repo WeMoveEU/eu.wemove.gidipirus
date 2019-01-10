@@ -5,7 +5,7 @@ class CRM_Gidipirus_Settings {
   /**
    * Number of days after request to forgetme
    */
-  const SCHEDULED_DAYS_DEFAULT = 21;
+  const SCHEDULED_DAYS_DEFAULT = 30;
 
   /**
    * Template of email for anonymisation
