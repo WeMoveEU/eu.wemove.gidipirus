@@ -2,6 +2,13 @@
 use CRM_Gidipirus_ExtensionUtil as E;
 
 function _civicrm_api3_gidipirus_cleanup_spec(&$spec) {
+  $spec['channels'] = [
+    'name' => 'channels',
+    'title' => E::ts('Array of channels'),
+    'description' => E::ts('Array of channels'),
+    'type' => CRM_Utils_Type::T_STRING,
+    'api.required' => 1,
+  ];
   $spec['dry_run'] = [
     'name' => 'dry_run',
     'title' => E::ts('Dry run'),
@@ -22,11 +29,24 @@ function _civicrm_api3_gidipirus_cleanup_spec(&$spec) {
  */
 function civicrm_api3_gidipirus_cleanup(&$params) {
   $start = microtime(TRUE);
+  $channels = [];
+  if (is_array($params['channels']) && array_key_exists('IN', $params['channels'])) {
+    $channels = $params['channels']['IN'];
+  }
+  elseif ($params['channels']) {
+    $channels = explode(',', $params['channels']);
+  }
+  foreach ($channels as $channel) {
+    if (!CRM_Gidipirus_Model_RequestChannel::isValid($channel)) {
+      throw new CiviCRM_API3_Exception(E::ts('Invalid name of channel: %1', [1 => $channel]), -1);
+    }
+  }
   $dryRun = (bool) $params['dry_run'];
   $query = "SELECT DISTINCT ac.contact_id
             FROM civicrm_activity af
               JOIN civicrm_activity_contact ac ON ac.activity_id = af.id AND ac.record_type_id = 3
-            WHERE af.activity_type_id = %1 AND af.status_id = 1 AND af.activity_date_time < NOW()";
+            WHERE af.activity_type_id = %1 AND af.status_id = 1 AND af.activity_date_time < NOW()
+              AND af.location IN ('" . implode("', '", $channels) . "')";
   $queryParams = [
     1 => [CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), 'Integer'],
   ];

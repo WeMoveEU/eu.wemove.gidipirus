@@ -10,7 +10,7 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
   const PAPER_LETTER = 'paper letter';
   const EXPIRED = 'expired';
 
-  private static $valid = [
+  public static $valid = [
     self::EMAIL,
     self::PHONE,
     self::PERSONAL,
