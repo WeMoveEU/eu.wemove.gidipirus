@@ -51,10 +51,16 @@ function _civicrm_api3_gidipirus_register_spec(&$spec) {
 function civicrm_api3_gidipirus_register(&$params) {
   $start = microtime(TRUE);
   $dryRun = (bool) $params['dry_run'];
-  $contactIds = $params['contact_ids'];
-  if (!is_array($contactIds)) {
-    $contactIds = [$contactIds];
+  if (is_array($params['contact_ids']) && array_key_exists('IN', $params['contact_ids'])) {
+    $contactIds = $params['contact_ids']['IN'];
   }
+  elseif (is_array($params['contact_ids'])) {
+    $contactIds = $params['contact_ids'];
+  }
+  else {
+    $contactIds = [$params['contact_ids']];
+  }
+
   $channel = $params['channel'];
   if (!CRM_Gidipirus_Model_RequestChannel::isValid($channel)) {
     throw new CiviCRM_API3_Exception(E::ts('Invalid name of channel'), -1);

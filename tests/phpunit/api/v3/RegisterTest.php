@@ -81,4 +81,34 @@ class api_v3_RegisterTest extends CRM_Gidipirus_BaseTest {
     $this->assertGreaterThan(0, $result['values'][0]['activity_id']);
   }
 
+  /**
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function testTwoContacts() {
+    $requestedDate = new DateTime();
+    self::emptyContact();
+    $contacts = [];
+    $contacts[] = self::$emptyContactId;
+    self::emptyContact();
+    $contacts[] = self::$emptyContactId;
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => $contacts,
+      'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
+      'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => TRUE,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'register', $params);
+    $this->assertEquals(2, $result['count']);
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => ['IN' => $contacts],
+      'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
+      'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => TRUE,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'register', $params);
+    $this->assertEquals(2, $result['count']);
+  }
+
 }
