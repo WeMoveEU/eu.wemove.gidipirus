@@ -28,20 +28,66 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
     CRM_Gidipirus_Model_RequestChannel::paperLetter();
     CRM_Gidipirus_Model_RequestChannel::expired();
 
+    CRM_Gidipirus_Settings::membersGroupId();
     CRM_Gidipirus_Settings::scheduledDays();
+    CRM_Gidipirus_Settings::emailTemplate();
+    CRM_Gidipirus_Settings::scannedActivitiesId();
+
+    return TRUE;
+  }
+
+  /**
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function upgrade_01_cleanup_job() {
+    $result = civicrm_api3('Job', 'get', [
+      'sequential' => 1,
+      'api_entity' => "Gidipirus",
+      'api_action' => "cleanup",
+    ]);
+    CRM_Core_Error::debug_var('$result', $result);
+    if ($result['count']) {
+      foreach ($result['values'] as $v) {
+        civicrm_api3('Job', 'delete', [
+          'sequential' => 1,
+          'id' => $v['id'],
+        ]);
+      }
+    }
 
     $params = [
       'sequential' => 1,
       'api_entity' => "Gidipirus",
       'api_action' => "cleanup",
       'run_frequency' => "Hourly",
-      'parameters' => "",
-      'name' => "Forget all contacts that are due to be forgotten (based on activity_date_time)",
+      'parameters' => "channels=" . implode(',', array_keys(CRM_Gidipirus_Model_RequestChannel::$values)),
+      'name' => "Forget ALL contacts (except expired) that are due to be forgotten",
+      'is_active' => 0,
+    ];
+    civicrm_api3('Job', 'create', $params);
+
+    $params = [
+      'sequential' => 1,
+      'api_entity' => "Gidipirus",
+      'api_action' => "cleanup",
+      'run_frequency' => "Daily",
+      'parameters' => "channels=" . CRM_Gidipirus_Model_RequestChannel::EXPIRED,
+      'name' => "Forget ONLY EXPIRED contacts that are due to be forgotten",
+      'is_active' => 0,
+    ];
+    civicrm_api3('Job', 'create', $params);
+
+    $params = [
+      'sequential' => 1,
+      'api_entity' => "Gidipirus",
+      'api_action' => "scan",
+      'run_frequency' => "Daily",
+      'parameters' => "limit=1000",
+      'name' => "Scan inactive members and mark them as expired",
       'is_active' => 0,
     ];
     civicrm_api3('Job', 'create', $params);
 
     return TRUE;
   }
-
 }
