@@ -83,7 +83,7 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
       'api_entity' => "Gidipirus",
       'api_action' => "scan",
       'run_frequency' => "Daily",
-      'parameters' => "limit=1000",
+      'parameters' => "limit=500",
       'name' => "Scan inactive members and mark them as expired",
       'is_active' => 0,
     ];
