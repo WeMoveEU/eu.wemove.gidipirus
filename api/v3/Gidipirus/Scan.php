@@ -36,7 +36,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
     $limit = 100;
   }
   $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
-  $groupId = 42; // todo move to settings
+  $groupId = CRM_Gidipirus_Settings::membersGroupId();
 
   $query = "SELECT
               c.id

@@ -13,6 +13,11 @@ class CRM_Gidipirus_Settings {
   const EMAIL_TEMPLATE = 'forgetme+%RANDOM%@wemove.eu';
 
   /**
+   * Monitor contacts only with history of this group
+   */
+  const MEMBERS_GROUP_ID = 42;
+
+  /**
    * Get or set scheduled days.
    *
    * @param int $days
@@ -52,11 +57,35 @@ class CRM_Gidipirus_Settings {
     return $template;
   }
 
+  /**
+   * Get or set members group id
+   *
+   * @param string $value Group Id
+   *
+   * @return mixed
+   */
+  public static function membersGroupId($value = '') {
+    if ($value) {
+      Civi::settings()->set(self::membersGroupIdKey(), $value);
+      return $value;
+    }
+    $value = Civi::settings()->get(self::membersGroupIdKey());
+    if (!$value) {
+      $value = Civi::settings()->set(self::membersGroupIdKey(), self::MEMBERS_GROUP_ID);
+    }
+
+    return $value;
+  }
+
   private static function scheduledDaysKey() {
     return __CLASS__ . '.' . __METHOD__;
   }
 
   private static function emailTemplateKey() {
+    return __CLASS__ . '.' . __METHOD__;
+  }
+
+  private static function membersGroupIdKey() {
     return __CLASS__ . '.' . __METHOD__;
   }
 

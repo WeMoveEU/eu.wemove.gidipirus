@@ -13,13 +13,21 @@ class CRM_Gidipirus_Form_Settings extends CRM_Core_Form {
 
   public function __construct($state = NULL, $action = CRM_Core_Action::NONE, $method = 'post', $name = NULL) {
     $this->fields = [
+      'members_group_id' => [
+        'type' => 'text',
+        'label' => E::ts("Members Group Id"),
+        'options' => [],
+        'required' => TRUE,
+        'default' => CRM_Gidipirus_Settings::membersGroupId(),
+        'order' => 10,
+      ],
       'scheduled_days' => [
         'type' => 'text',
         'label' => E::ts("Scheduled days"),
         'options' => [],
         'required' => TRUE,
         'default' => CRM_Gidipirus_Settings::scheduledDays(),
-        'order' => 10,
+        'order' => 20,
       ],
       'email_template' => [
         'type' => 'text',
@@ -27,7 +35,7 @@ class CRM_Gidipirus_Form_Settings extends CRM_Core_Form {
         'options' => [],
         'required' => TRUE,
         'default' => CRM_Gidipirus_Settings::emailTemplate(),
-        'order' => 20,
+        'order' => 30,
       ],
     ];
     parent::__construct($state, $action, $method, $name);
@@ -55,6 +63,7 @@ class CRM_Gidipirus_Form_Settings extends CRM_Core_Form {
 
   public function postProcess() {
     $values = $this->exportValues();
+    CRM_Gidipirus_Settings::membersGroupId($values['members_group_id']);
     CRM_Gidipirus_Settings::scheduledDays($values['scheduled_days']);
     CRM_Gidipirus_Settings::emailTemplate($values['email_template']);
     CRM_Core_Session::setStatus(E::ts('Settings are updated'), 'Gidipirus', 'success');
