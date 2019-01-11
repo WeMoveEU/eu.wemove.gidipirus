@@ -39,8 +39,10 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
   }
 
   /**
+   * @throws \CiviCRM_API3_Exception
    */
   public function testCleanExpired() {
+    self::inactiveMembersContact();
     $params = [
       'sequential' => 1,
       'dry_run' => 1,
@@ -48,6 +50,35 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
     ];
     $result = $this->callAPISuccess('Gidipirus', 'cleanup', $params);
     $this->assertGreaterThan(0, $result['count']);
+  }
+
+  /**
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function testNotRelevantRequest() {
+    self::inactiveMembersContact();
+    $firstContactId = self::$inactiveMemberContactId;
+    $result = $this->callAPISuccess('Gidipirus', 'scan', ['dry_run' => 0]);
+    $this->assertGreaterThan(0, $result['count']);
+
+    $result = civicrm_api3('Activity', 'create', [
+      'source_contact_id' => $firstContactId,
+      'activity_type_id' => "Phone Call",
+      'activity_date_time' => date('Y-m-d'),
+    ]);
+
+    $params = [
+      'sequential' => 1,
+      'dry_run' => 1,
+      'channels' => CRM_Gidipirus_Model_RequestChannel::EXPIRED,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'cleanup', $params);
+    foreach ($result['values'] as $value) {
+      if ($value['id'] == $firstContactId) {
+        $this->assertEquals(0, $value['result']);
+        $this->assertEquals('This expired registration request is already not relevant.', $value['error']);
+      }
+    }
   }
 
 }
