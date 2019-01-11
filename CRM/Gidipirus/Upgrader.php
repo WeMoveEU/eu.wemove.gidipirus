@@ -33,6 +33,8 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
     CRM_Gidipirus_Settings::emailTemplate();
     CRM_Gidipirus_Settings::scannedActivitiesId();
 
+    $this->upgrade_01_cleanup_job();
+
     return TRUE;
   }
 
@@ -45,7 +47,6 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
       'api_entity' => "Gidipirus",
       'api_action' => "cleanup",
     ]);
-    CRM_Core_Error::debug_var('$result', $result);
     if ($result['count']) {
       foreach ($result['values'] as $v) {
         civicrm_api3('Job', 'delete', [
@@ -90,4 +91,5 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
 
     return TRUE;
   }
+
 }
