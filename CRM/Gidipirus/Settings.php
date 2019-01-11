@@ -77,6 +77,31 @@ class CRM_Gidipirus_Settings {
     return $value;
   }
 
+  /**
+   * Get or set members group id
+   *
+   * @return array
+   */
+  public static function scannedActivitiesId() {
+    $value = Civi::settings()->get(self::scannedActivitiesIdKey());
+    if (!$value) {
+      $query = "SELECT
+                  value activity_type_id
+                FROM civicrm_option_value ov
+                  JOIN civicrm_option_group og ON og.id = ov.option_group_id
+                WHERE og.name = 'activity_type' AND
+                  ov.name IN ('Phone Call', 'Email', 'Survey', 'Petition', 'share', 'Tweet', 'Facebook')";
+      $dao = CRM_Core_DAO::executeQuery($query);
+      $value = [];
+      while ($dao->fetch()) {
+        $value[$dao->activity_type_id] = (int) $dao->activity_type_id;
+      }
+      Civi::settings()->set(self::scannedActivitiesIdKey(), $value);
+    }
+
+    return $value;
+  }
+
   private static function scheduledDaysKey() {
     return __CLASS__ . '.' . __METHOD__;
   }
@@ -86,6 +111,10 @@ class CRM_Gidipirus_Settings {
   }
 
   private static function membersGroupIdKey() {
+    return __CLASS__ . '.' . __METHOD__;
+  }
+
+  private static function scannedActivitiesIdKey() {
     return __CLASS__ . '.' . __METHOD__;
   }
 

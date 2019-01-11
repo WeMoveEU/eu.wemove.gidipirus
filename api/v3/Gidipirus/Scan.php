@@ -35,6 +35,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
   if (!$limit) {
     $limit = 100;
   }
+  $scannedActivitiesId = CRM_Gidipirus_Settings::scannedActivitiesId();
   $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
   $groupId = CRM_Gidipirus_Settings::membersGroupId();
 
@@ -45,7 +46,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
                 SELECT ac1.contact_id, MAX(a1.activity_date_time) latest_date_time
                 FROM civicrm_activity_contact ac1
                   JOIN civicrm_activity a1 ON a1.id = ac1.activity_id
-                 WHERE a1.activity_type_id IN (2, 3, 28, 32, 54, 59, 67) -- todo move to table
+                 WHERE a1.activity_type_id IN (" . implode(', ', $scannedActivitiesId) . ")
                 GROUP BY ac1.contact_id
               ) latest_ac ON latest_ac.contact_id = c.id
               LEFT JOIN (
@@ -60,6 +61,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
                 WHERE a2.activity_type_id = %3
               ) request ON request.contact_id = c.id
               LEFT JOIN civicrm_group_contact gc ON gc.group_id = %2 AND gc.status = 'Added' AND gc.contact_id = c.id
+              -- todo use history of members group
             WHERE c.contact_type = 'Individual'
                 AND donors.contact_id IS NULL
                 AND request.contact_id IS NULL
