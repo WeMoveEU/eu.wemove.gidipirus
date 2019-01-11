@@ -7,7 +7,7 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
   const EMAIL = 'email';
   const PHONE = 'phone';
   const PERSONAL = 'personal';
-  const PAPER_LETTER = 'paper letter';
+  const PAPER_LETTER = 'paper-letter';
   const EXPIRED = 'expired';
 
   public static $valid = [
