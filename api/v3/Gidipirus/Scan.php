@@ -40,7 +40,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
   $groupId = CRM_Gidipirus_Settings::membersGroupId();
 
   $query = "SELECT
-              c.id
+              DISTINCTROW c.id
             FROM civicrm_contact c
               JOIN (
                 SELECT ac1.contact_id, MAX(a1.activity_date_time) latest_date_time
@@ -61,7 +61,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
                 WHERE a2.activity_type_id = %3
               ) request ON request.contact_id = c.id
               LEFT JOIN civicrm_group_contact gc ON gc.group_id = %2 AND gc.status = 'Added' AND gc.contact_id = c.id
-              -- todo use history of members group
+              JOIN civicrm_subscription_history sh ON sh.group_id = %2 AND sh.contact_id = c.id
             WHERE c.contact_type = 'Individual'
                 AND donors.contact_id IS NULL
                 AND request.contact_id IS NULL

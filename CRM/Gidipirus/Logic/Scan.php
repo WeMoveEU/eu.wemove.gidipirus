@@ -24,7 +24,7 @@ class CRM_Gidipirus_Logic_Scan {
     if ($contactId) {
       $scannedActivitiesId = CRM_Gidipirus_Settings::scannedActivitiesId();
       $query = "SELECT
-                  c.id
+                  DISTINCTROW c.id
                 FROM civicrm_contact c
                   JOIN (
                          SELECT ac1.contact_id, MAX(a1.activity_date_time) latest_date_time
@@ -40,7 +40,7 @@ class CRM_Gidipirus_Logic_Scan {
                               WHERE ct.contribution_status_id = 1 AND ct.contact_id = %1
                             ) donors ON donors.contact_id = c.id
                   LEFT JOIN civicrm_group_contact gc ON gc.group_id = %2 AND gc.status = 'Added' AND gc.contact_id = c.id
-                  -- todo use history of members group
+                  JOIN civicrm_subscription_history sh ON sh.group_id = %2 AND sh.contact_id = c.id
                 WHERE c.contact_type = 'Individual' AND c.id = %1
                     AND donors.contact_id IS NULL
                     AND gc.id IS NULL

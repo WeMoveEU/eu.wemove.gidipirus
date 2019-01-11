@@ -57,6 +57,8 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
     $result = civicrm_api3('Contact', 'create', $params);
     self::$emptyContactId = $result['id'];
     self::$contactIds[self::$emptyContactId] = self::$emptyContactId;
+
+    return self::$emptyContactId;
   }
 
   /**
@@ -89,6 +91,8 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
       'activity_type_id' => "Phone Call",
       'activity_date_time' => "2017-12-31",
     ]);
+
+    return self::$inactiveMemberContactId;
   }
 
   /**
@@ -151,6 +155,8 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
       ],
     ];
     civicrm_api3('Activity', 'create', $params);
+
+    return self::$fullContactId;
   }
 
   /**
@@ -174,6 +180,8 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
       'contribution_status_id' => "Completed",
     ]);
     self::$contributionId = $result['id'];
+
+    return self::$donorContactId;
   }
 
   /**
