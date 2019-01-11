@@ -31,7 +31,8 @@ class CRM_Gidipirus_Settings {
     }
     $days = Civi::settings()->get(self::scheduledDaysKey());
     if (!$days) {
-      Civi::settings()->set(self::scheduledDaysKey(), self::SCHEDULED_DAYS_DEFAULT);
+      $days = self::SCHEDULED_DAYS_DEFAULT;
+      Civi::settings()->set(self::scheduledDaysKey(), $days);
     }
 
     return $days;
@@ -51,8 +52,8 @@ class CRM_Gidipirus_Settings {
     }
     $template = Civi::settings()->get(self::emailTemplateKey());
     if (!$template) {
-      // fixme at this step the function returns empty
-      Civi::settings()->set(self::emailTemplateKey(), self::EMAIL_TEMPLATE);
+      $template = self::EMAIL_TEMPLATE;
+      Civi::settings()->set(self::emailTemplateKey(), $template);
     }
 
     return $template;
@@ -72,7 +73,8 @@ class CRM_Gidipirus_Settings {
     }
     $value = Civi::settings()->get(self::membersGroupIdKey());
     if (!$value) {
-      $value = Civi::settings()->set(self::membersGroupIdKey(), self::MEMBERS_GROUP_ID);
+      $value = self::MEMBERS_GROUP_ID;
+      Civi::settings()->set(self::membersGroupIdKey(), self::MEMBERS_GROUP_ID);
     }
 
     return $value;
