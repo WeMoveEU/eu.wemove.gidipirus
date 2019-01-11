@@ -9,6 +9,14 @@ function _civicrm_api3_gidipirus_cleanup_spec(&$spec) {
     'type' => CRM_Utils_Type::T_STRING,
     'api.required' => 1,
   ];
+  $spec['limit'] = [
+    'name' => 'limit',
+    'title' => E::ts('Limit'),
+    'description' => E::ts('How many contacts will be anonymised'),
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 1,
+    'api.default' => 100,
+  ];
   $spec['dry_run'] = [
     'name' => 'dry_run',
     'title' => E::ts('Dry run'),
@@ -44,14 +52,20 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
       throw new CiviCRM_API3_Exception(E::ts('Invalid name of channel: %1', [1 => $channel]), -1);
     }
   }
+  $limit = (int) $params['limit'];
+  if (!$limit) {
+    $limit = 100;
+  }
   $dryRun = (bool) $params['dry_run'];
   $query = "SELECT DISTINCT ac.contact_id
             FROM civicrm_activity af
               JOIN civicrm_activity_contact ac ON ac.activity_id = af.id AND ac.record_type_id = 3
             WHERE af.activity_type_id = %1 AND af.status_id = 1 AND af.activity_date_time < NOW()
-              AND af.location IN ('" . implode("', '", $channels) . "')";
+              AND af.location IN ('" . implode("', '", $channels) . "')
+            LIMIT %2";
   $queryParams = [
     1 => [CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), 'Integer'],
+    2 => [$limit, 'Integer'],
   ];
   $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
   $contactIds = [];
