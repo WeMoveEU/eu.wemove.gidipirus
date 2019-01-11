@@ -51,6 +51,7 @@ class CRM_Gidipirus_Settings {
     }
     $template = Civi::settings()->get(self::emailTemplateKey());
     if (!$template) {
+      // fixme at this step the function returns empty
       Civi::settings()->set(self::emailTemplateKey(), self::EMAIL_TEMPLATE);
     }
 

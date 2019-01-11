@@ -14,6 +14,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
   protected static $loggedUserId = 1;
   protected static $contactIds = [];
   protected static $emptyContactId;
+  protected static $inactiveMemberContactId;
   protected static $fullContactId;
   protected static $donorContactId;
   protected static $contributionId;
@@ -56,6 +57,38 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
     $result = civicrm_api3('Contact', 'create', $params);
     self::$emptyContactId = $result['id'];
     self::$contactIds[self::$emptyContactId] = self::$emptyContactId;
+  }
+
+  /**
+   * Contact which is not in Members group but was
+   *
+   * @throws \CiviCRM_API3_Exception
+   */
+  protected static function inactiveMembersContact() {
+    $params = [
+      'sequential' => 1,
+      'contact_type' => 'Individual',
+      'first_name' => 'Limos',
+      'last_name' => 'Limos',
+    ];
+    $result = civicrm_api3('Contact', 'create', $params);
+    self::$inactiveMemberContactId = $result['id'];
+    self::$contactIds[self::$inactiveMemberContactId] = self::$inactiveMemberContactId;
+    $result = civicrm_api3('GroupContact', 'create', [
+      'group_id' => CRM_Gidipirus_Settings::membersGroupId(),
+      'contact_id' => self::$inactiveMemberContactId,
+      'status' => "Added",
+    ]);
+    $result = civicrm_api3('GroupContact', 'create', [
+      'group_id' => CRM_Gidipirus_Settings::membersGroupId(),
+      'contact_id' => self::$inactiveMemberContactId,
+      'status' => "Removed",
+    ]);
+    $result = civicrm_api3('Activity', 'create', [
+      'source_contact_id' => self::$inactiveMemberContactId,
+      'activity_type_id' => "Phone Call",
+      'activity_date_time' => "2017-12-31",
+    ]);
   }
 
   /**
