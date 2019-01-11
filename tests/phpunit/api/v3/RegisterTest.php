@@ -86,11 +86,9 @@ class api_v3_RegisterTest extends CRM_Gidipirus_BaseTest {
    */
   public function testTwoContacts() {
     $requestedDate = new DateTime();
-    self::emptyContact();
     $contacts = [];
-    $contacts[] = self::$emptyContactId;
-    self::emptyContact();
-    $contacts[] = self::$emptyContactId;
+    $contacts[] = self::emptyContact();
+    $contacts[] = self::emptyContact();
     $params = [
       'sequential' => 1,
       'contact_ids' => $contacts,

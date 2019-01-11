@@ -56,8 +56,7 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
    * @throws \CiviCRM_API3_Exception
    */
   public function testNotRelevantRequest() {
-    self::inactiveMembersContact();
-    $firstContactId = self::$inactiveMemberContactId;
+    $firstContactId = self::inactiveMembersContact();
     $result = $this->callAPISuccess('Gidipirus', 'scan', ['dry_run' => 0]);
     $this->assertGreaterThan(0, $result['count']);
 

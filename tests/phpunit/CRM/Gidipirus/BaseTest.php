@@ -45,6 +45,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
   }
 
   /**
+   * @return int
    * @throws \CiviCRM_API3_Exception
    */
   protected static function emptyContact() {
@@ -64,6 +65,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
   /**
    * Contact which is not in Members group but was
    *
+   * @return int
    * @throws \CiviCRM_API3_Exception
    */
   protected static function inactiveMembersContact() {
@@ -96,6 +98,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
   }
 
   /**
+   * @return int
    * @throws \CiviCRM_API3_Exception
    */
   protected static function fullContact() {
@@ -160,6 +163,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
   }
 
   /**
+   * @return int
    * @throws \CiviCRM_API3_Exception
    */
   protected static function donorContact() {
