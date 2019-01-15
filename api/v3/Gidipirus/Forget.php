@@ -41,6 +41,7 @@ function civicrm_api3_gidipirus_forget(&$params) {
   }
   $values = [];
   foreach ($contactIds as $contactId) {
+    $requestId = 0;
     try {
       $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId, TRUE);
       CRM_Gidipirus_Logic_Scan::isRelevantRequestIfExpired($requestId);
@@ -53,12 +54,28 @@ function civicrm_api3_gidipirus_forget(&$params) {
       }
       $values[$contactId] = [
         'id' => $contactId,
+        'activity_id' => $requestId,
         'result' => $valueResult,
+      ];
+    }
+    catch (CRM_Gidipirus_Exception_NotExpired $exception) {
+      if ($dryRun) {
+        $valueResult = 1;
+      }
+      else {
+        $valueResult = (int) CRM_Gidipirus_Logic_Register::cancel($requestId);
+      }
+      $values[$contactId] = [
+        'id' => $contactId,
+        'activity_id' => $requestId,
+        'result' => $valueResult,
+        'error' => $exception->getMessage(),
       ];
     }
     catch (CRM_Extension_Exception $exception) {
       $values[$contactId] = [
         'id' => $contactId,
+        'activity_id' => $requestId,
         'result' => 0,
         'error' => $exception->getMessage(),
       ];

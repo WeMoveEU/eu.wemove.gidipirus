@@ -182,6 +182,25 @@ class CRM_Gidipirus_Logic_Register {
   }
 
   /**
+   * Cancel Forgetme Fulfillment request activity
+   *
+   * @param int $requestId Id of Forgetme Fulfillment request activity
+   *
+   * @return bool
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function cancel($requestId) {
+    $params = [
+      'sequential' => 1,
+      'id' => $requestId,
+      'status_id' => CRM_Gidipirus_Model_Activity::cancelled(),
+      'activity_date_time' => date('YmdHis'),
+    ];
+    $result = civicrm_api3('Activity', 'create', $params);
+    return !!$result['count'];
+  }
+
+  /**
    * Set fulfillment date to now
    *
    * @param int $requestId Id of Forgetme Fulfillment request activity

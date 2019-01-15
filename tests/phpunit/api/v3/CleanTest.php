@@ -68,14 +68,22 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
 
     $params = [
       'sequential' => 1,
-      'dry_run' => 1,
+      'dry_run' => 0,
       'channels' => CRM_Gidipirus_Model_RequestChannel::EXPIRED,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'cleanup', $params);
     foreach ($result['values'] as $value) {
       if ($value['id'] == $firstContactId) {
-        $this->assertEquals(0, $value['result']);
+        $this->assertEquals(1, $value['result']);
+        $this->assertGreaterThan(0, $value['activity_id']);
         $this->assertEquals('This expired registration request is already not relevant.', $value['error']);
+
+        $resultA = civicrm_api3('Activity', 'get', [
+          'sequential' => 1,
+          'id' => $value['activity_id'],
+        ]);
+        $this->assertEquals(CRM_Gidipirus_Model_Activity::cancelled(), $resultA['values'][0]['status_id']);
+        $this->assertEquals(CRM_Gidipirus_Model_RequestChannel::EXPIRED, $resultA['values'][0]['location']);
       }
     }
   }
