@@ -39,7 +39,6 @@ function civicrm_api3_gidipirus_scan(&$params) {
   $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
   $groupId = CRM_Gidipirus_Settings::membersGroupId();
 
-  // todo add activity status id
   $query = "SELECT
               DISTINCTROW c.id
             FROM civicrm_contact c
@@ -59,7 +58,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
                 SELECT ac2.contact_id, ac2.activity_id
                 FROM civicrm_activity_contact ac2
                   JOIN civicrm_activity a2 ON a2.id = ac2.activity_id
-                WHERE a2.activity_type_id = %3
+                WHERE a2.activity_type_id = %3 AND a2.status_id IN (%4, %5)
               ) request ON request.contact_id = c.id
               LEFT JOIN civicrm_group_contact gc ON gc.group_id = %2 AND gc.status = 'Added' AND gc.contact_id = c.id
               JOIN civicrm_subscription_history sh ON sh.group_id = %2 AND sh.contact_id = c.id
@@ -73,6 +72,8 @@ function civicrm_api3_gidipirus_scan(&$params) {
     1 => [$limit, 'Integer'],
     2 => [$groupId, 'Integer'],
     3 => [$fulfillmentId, 'Integer'],
+    4 => [CRM_Gidipirus_Model_Activity::scheduled(), 'Integer'],
+    5 => [CRM_Gidipirus_Model_Activity::completed(), 'Integer'],
   ];
   $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
   $contactIds = [];

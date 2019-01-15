@@ -4,6 +4,7 @@ class CRM_Gidipirus_Logic_Register {
 
   /**
    * Check whether contact has FulFillment Request and returns activity id.
+   * Only "active" request on scheduled or completed status.
    *
    * @param int $contactId
    * @param bool $isReadyToForget Check if contact is ready to forget, when
@@ -17,14 +18,15 @@ class CRM_Gidipirus_Logic_Register {
    */
   public static function hasRequest($contactId, $isReadyToForget = FALSE) {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
-    // todo add activity status id
     $query = "SELECT a.id, IF(activity_date_time < NOW(), 1, 0) is_ready
               FROM civicrm_activity a
                 JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
-              WHERE a.activity_type_id = %1 AND ac.contact_id = %2";
+              WHERE a.activity_type_id = %1 AND a.status_id IN (%3, %4) AND ac.contact_id = %2";
     $params = [
       1 => [$fulfillmentId, 'Integer'],
       2 => [$contactId, 'Integer'],
+      3 => [CRM_Gidipirus_Model_Activity::scheduled(), 'Integer'],
+      4 => [CRM_Gidipirus_Model_Activity::completed(), 'Integer'],
     ];
     $dao = CRM_Core_DAO::executeQuery($query, $params);
     if ($dao->N > 1) {
@@ -45,7 +47,8 @@ class CRM_Gidipirus_Logic_Register {
   }
 
   /**
-   * Get FulFillment Request for contact
+   * Get FulFillment Request for contact.
+   * Only "active" request on scheduled or completed status.
    *
    * @param int $contactId
    *
@@ -54,14 +57,15 @@ class CRM_Gidipirus_Logic_Register {
    */
   public static function getRequest($contactId) {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
-    // todo add activity status id
     $query = "SELECT a.id, a.activity_date_time, a.location, REPLACE(a.subject, 'RequestedDate:', '') requested_date
               FROM civicrm_activity a
                 JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
-              WHERE a.activity_type_id = %1 AND ac.contact_id = %2";
+              WHERE a.activity_type_id = %1 AND a.status_id IN (%3, %4) AND ac.contact_id = %2";
     $params = [
       1 => [$fulfillmentId, 'Integer'],
       2 => [$contactId, 'Integer'],
+      3 => [CRM_Gidipirus_Model_Activity::scheduled(), 'Integer'],
+      4 => [CRM_Gidipirus_Model_Activity::completed(), 'Integer'],
     ];
     $dao = CRM_Core_DAO::executeQuery($query, $params);
     if ($dao->N == 1) {

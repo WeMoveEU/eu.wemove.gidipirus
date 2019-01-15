@@ -41,7 +41,6 @@ function civicrm_api3_gidipirus_status(&$params) {
     $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE;
   }
   else {
-    // todo add activity status id
     $query = "SELECT
                 CASE
                   WHEN af.status_id = 1 AND af.activity_date_time > NOW() THEN %3
@@ -50,13 +49,15 @@ function civicrm_api3_gidipirus_status(&$params) {
                 END forgetme_status
               FROM civicrm_activity af
                 JOIN civicrm_activity_contact acf ON acf.activity_id = af.id AND acf.record_type_id = 3
-              WHERE acf.contact_id = %1 AND af.activity_type_id = %2";
+              WHERE acf.contact_id = %1 AND af.activity_type_id = %2 AND af.status_id IN (%6, %7)";
     $queryParams = [
       1 => [$contactId, 'Integer'],
       2 => [CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), 'Integer'],
       3 => [CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE, 'Integer'],
       4 => [CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE, 'Integer'],
       5 => [CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE, 'Integer'],
+      6 => [CRM_Gidipirus_Model_Activity::scheduled(), 'Integer'],
+      7 => [CRM_Gidipirus_Model_Activity::completed(), 'Integer'],
     ];
     $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
     if ($dao->N > 1) {

@@ -25,6 +25,7 @@ class api_v3_ScanTest extends CRM_Gidipirus_BaseTest {
       'id' => $requestId,
     ]);
     $this->assertEquals(CRM_Gidipirus_Model_RequestChannel::EXPIRED, $result['values'][0]['location']);
+    $this->assertEquals(CRM_Gidipirus_Model_Activity::scheduled(), $result['values'][0]['status_id']);
   }
 
   /**
