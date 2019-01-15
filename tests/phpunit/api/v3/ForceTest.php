@@ -32,7 +32,7 @@ class api_v3_ForceTest extends CRM_Gidipirus_BaseTest {
         'activity_id' => '$value.id',
       ]
     ]);
-    $scheduledId = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Scheduled');
+    $scheduledId = CRM_Gidipirus_Model_Activity::scheduled();
     $this->assertEquals('RequestedDate:' . $requestedDate->format('Y-m-d'), $activity['values'][0]['subject']);
     $this->assertEquals(CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), $activity['values'][0]['activity_type_id']);
     $this->assertEquals($scheduledId, $activity['values'][0]['status_id']);

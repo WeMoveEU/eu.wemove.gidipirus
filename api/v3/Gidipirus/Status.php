@@ -41,6 +41,7 @@ function civicrm_api3_gidipirus_status(&$params) {
     $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE;
   }
   else {
+    // todo add activity status id
     $query = "SELECT
                 CASE
                   WHEN af.status_id = 1 AND af.activity_date_time > NOW() THEN %3

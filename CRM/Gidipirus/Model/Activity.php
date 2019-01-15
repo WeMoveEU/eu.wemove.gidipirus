@@ -55,4 +55,31 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
     return self::optionValue('activity_type', $name, $options);
   }
 
+  /**
+   * Get id of Scheduled status
+   *
+   * @return int
+   */
+  public static function scheduled() {
+    return (int) CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Scheduled');
+  }
+
+  /**
+   * Get id of Completed status
+   *
+   * @return int
+   */
+  public static function completed() {
+    return (int) CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Completed');
+  }
+
+  /**
+   * Get id of Cancelled status
+   *
+   * @return int
+   */
+  public static function cancelled() {
+    return (int) CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Cancelled');
+  }
+
 }

@@ -60,12 +60,13 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
   $query = "SELECT DISTINCT ac.contact_id
             FROM civicrm_activity af
               JOIN civicrm_activity_contact ac ON ac.activity_id = af.id AND ac.record_type_id = 3
-            WHERE af.activity_type_id = %1 AND af.status_id = 1 AND af.activity_date_time < NOW()
+            WHERE af.activity_type_id = %1 AND af.status_id = %2 AND af.activity_date_time < NOW()
               AND af.location IN ('" . implode("', '", $channels) . "')
-            LIMIT %2";
+            LIMIT %3";
   $queryParams = [
     1 => [CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId(), 'Integer'],
-    2 => [$limit, 'Integer'],
+    2 => [CRM_Gidipirus_Model_Activity::scheduled(), 'Integer'],
+    3 => [$limit, 'Integer'],
   ];
   $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
   $contactIds = [];

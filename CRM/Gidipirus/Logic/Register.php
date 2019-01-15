@@ -17,6 +17,7 @@ class CRM_Gidipirus_Logic_Register {
    */
   public static function hasRequest($contactId, $isReadyToForget = FALSE) {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
+    // todo add activity status id
     $query = "SELECT a.id, IF(activity_date_time < NOW(), 1, 0) is_ready
               FROM civicrm_activity a
                 JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
@@ -53,6 +54,7 @@ class CRM_Gidipirus_Logic_Register {
    */
   public static function getRequest($contactId) {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
+    // todo add activity status id
     $query = "SELECT a.id, a.activity_date_time, a.location, REPLACE(a.subject, 'RequestedDate:', '') requested_date
               FROM civicrm_activity a
                 JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
@@ -123,7 +125,7 @@ class CRM_Gidipirus_Logic_Register {
       'sequential' => 1,
       'activity_type_id' => $fulfillmentId,
       'activity_date_time' => $fullfillmentDate,
-      'status_id' => 'Scheduled',
+      'status_id' => CRM_Gidipirus_Model_Activity::scheduled(),
       'subject' => self::subject($requestedDate),
       'location' => $channel,
       'api.ActivityContact.create' => [
@@ -168,7 +170,7 @@ class CRM_Gidipirus_Logic_Register {
     $params = [
       'sequential' => 1,
       'id' => $requestId,
-      'status_id' => 'Completed',
+      'status_id' => CRM_Gidipirus_Model_Activity::completed(),
       'activity_date_time' => date('YmdHis'),
     ];
     $result = civicrm_api3('Activity', 'create', $params);

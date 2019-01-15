@@ -39,6 +39,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
   $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
   $groupId = CRM_Gidipirus_Settings::membersGroupId();
 
+  // todo add activity status id
   $query = "SELECT
               DISTINCTROW c.id
             FROM civicrm_contact c
