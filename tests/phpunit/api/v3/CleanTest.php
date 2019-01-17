@@ -42,14 +42,25 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
    * @throws \CiviCRM_API3_Exception
    */
   public function testCleanExpired() {
-    self::inactiveMembersContact();
+    $contacts[] = self::inactiveMembersContact();
+    $contacts[] = self::inactiveMembersContact();
+    $result = $this->callAPISuccess('Gidipirus', 'scan', ['dry_run' => 0]);
+    $this->assertGreaterThanOrEqual(1, $result['count']);
+
     $params = [
       'sequential' => 1,
-      'dry_run' => 1,
+      'dry_run' => 0,
       'channels' => CRM_Gidipirus_Model_RequestChannel::EXPIRED,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'cleanup', $params);
     $this->assertGreaterThan(0, $result['count']);
+    $cleanedUp = 0;
+    foreach ($result['values'] as $value) {
+      if (in_array($value['id'], $contacts) && $value['result']) {
+        $cleanedUp++;
+      }
+    }
+    $this->assertEquals(2, $cleanedUp, 'Two inactive members with expired requests are cleaned up properly');
   }
 
   /**
@@ -86,6 +97,62 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
         $this->assertEquals(CRM_Gidipirus_Model_RequestChannel::EXPIRED, $resultA['values'][0]['location']);
       }
     }
+  }
+
+  /**
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function testNotRelevantExpiredRequestAndNewProper() {
+    $requestedDate = new DateTime();
+    $firstContactId = self::inactiveMembersContact();
+    $result = $this->callAPISuccess('Gidipirus', 'scan', ['dry_run' => 0]);
+    $this->assertGreaterThan(0, $result['count']);
+
+    civicrm_api3('Activity', 'create', [
+      'source_contact_id' => $firstContactId,
+      'activity_type_id' => "Phone Call",
+      'activity_date_time' => date('Y-m-d'),
+    ]);
+
+    $params = [
+      'sequential' => 1,
+      'dry_run' => 0,
+      'channels' => CRM_Gidipirus_Model_RequestChannel::EXPIRED,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'cleanup', $params);
+    $expiredActivityId = 0;
+    foreach ($result['values'] as $value) {
+      if ($value['id'] == $firstContactId) {
+        $expiredActivityId = $value['activity_id'];
+        break;
+      }
+    }
+
+    $result = $this->callAPISuccess('Gidipirus', 'register', [
+      'sequential' => 1,
+      'contact_ids' => $firstContactId,
+      'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
+      'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => FALSE,
+    ]);
+    $activityId = $result['values'][0]['activity_id'];
+    $this->assertTrue($result['values'][0]['result'] == 1);
+    $this->assertGreaterThan(0, $activityId, 'Activity is created');
+
+    $resultEmail = $this->callAPISuccess('Activity', 'get', [
+      'sequential' => 1,
+      'id' => $activityId,
+    ]);
+    $this->assertEquals(CRM_Gidipirus_Model_Activity::scheduled(), $resultEmail['values'][0]['status_id']);
+    $this->assertEquals(CRM_Gidipirus_Model_RequestChannel::EMAIL, $resultEmail['values'][0]['location']);
+
+    $resultExpired = $this->callAPISuccess('Activity', 'get', [
+      'sequential' => 1,
+      'id' => $expiredActivityId,
+    ]);
+    $this->assertEquals(CRM_Gidipirus_Model_Activity::cancelled(), $resultExpired['values'][0]['status_id']);
+    $this->assertEquals(CRM_Gidipirus_Model_RequestChannel::EXPIRED, $resultExpired['values'][0]['location']);
+
   }
 
 }
