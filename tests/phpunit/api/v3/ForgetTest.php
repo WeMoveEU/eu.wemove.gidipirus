@@ -151,4 +151,34 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
     // todo check Inbound Email activities
   }
 
+  /**
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function testForgetDeletedContacts() {
+    $contactId = self::emptyContact();
+    $requestedDate = new DateTime();
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => $contactId,
+      'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
+      'requested_date' => $requestedDate->format('Y-m-d'),
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'force', $params);
+
+    $this->callAPISuccess('Contact', 'delete', [
+      'sequential' => 1,
+      'id' => $contactId,
+    ]);
+
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => $contactId,
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'forget', $params);
+    $this->assertTrue($result['values'][0]['result'] == 1);
+    $this->assertEquals(1, $result['updated']);
+    $this->assertEquals(0, $result['not_updated']);
+
+  }
+
 }
