@@ -47,6 +47,7 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::PERSONAL,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result1 = $this->callAPISuccess('Gidipirus', 'register', $params);
     $params = [
@@ -68,6 +69,7 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::PERSONAL,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result1 = $this->callAPISuccess('Gidipirus', 'force', $params);
     $params = [
@@ -89,6 +91,7 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::PERSONAL,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result1 = $this->callAPISuccess('Gidipirus', 'force', $params);
     sleep(1);
@@ -111,11 +114,13 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::PERSONAL,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result1 = $this->callAPISuccess('Gidipirus', 'force', $params);
     $params = [
       'sequential' => 1,
       'contact_ids' => self::$emptyContactId,
+      'dry_run' => 0,
     ];
     $result2 = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $params = [
@@ -137,6 +142,7 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::PERSONAL,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result1 = $this->callAPISuccess('Gidipirus', 'register', $params);
     $result2 = $this->callAPISuccess('Gidipirus', 'register', $params);

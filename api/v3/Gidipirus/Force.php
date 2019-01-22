@@ -35,8 +35,8 @@ function _civicrm_api3_gidipirus_force_spec(&$spec) {
     'title' => E::ts('Dry run'),
     'description' => E::ts('Only checking whether contact has valid Forgetme Fulfillment activity'),
     'type' => CRM_Utils_Type::T_BOOLEAN,
-    'api.required' => 0,
-    'api.default' => FALSE,
+    'api.required' => 1,
+    'api.default' => 0,
   ];
 }
 
@@ -50,7 +50,7 @@ function _civicrm_api3_gidipirus_force_spec(&$spec) {
  */
 function civicrm_api3_gidipirus_force(&$params) {
   $start = microtime(TRUE);
-  $dryRun = (bool) $params['dry_run'];
+  $dryRun = (int) $params['dry_run'];
   if (is_array($params['contact_ids']) && array_key_exists('IN', $params['contact_ids'])) {
     $contactIds = $params['contact_ids']['IN'];
   }

@@ -18,6 +18,7 @@ class api_v3_ForceTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'force', $params);
     $activityId = $result['values'][0]['activity_id'];
@@ -58,6 +59,7 @@ class api_v3_ForceTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => 'non-existing-channel',
       'requested_date' => date('YmdHis'),
+      'dry_run' => 0,
     ];
     $result = $this->callAPIFailure('Gidipirus', 'force', $params);
     $this->assertTrue($result['is_error'] == 1);
@@ -75,6 +77,7 @@ class api_v3_ForceTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::PAPER_LETTER,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'register', $params);
     $this->assertTrue($result['values'][0]['result'] == 1);
@@ -86,6 +89,7 @@ class api_v3_ForceTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$emptyContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::PAPER_LETTER,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'force', $params);
     $this->assertTrue($result['values'][0]['result'] == 1);
@@ -103,6 +107,7 @@ class api_v3_ForceTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$donorContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
       'requested_date' => date('YmdHis'),
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'force', $params);
     $this->assertTrue($result['values'][0]['result'] == 1);

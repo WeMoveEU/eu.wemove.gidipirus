@@ -22,8 +22,8 @@ function _civicrm_api3_gidipirus_cleanup_spec(&$spec) {
     'title' => E::ts('Dry run'),
     'description' => E::ts('Only checking whether contact has valid Forgetme Fulfillment activity'),
     'type' => CRM_Utils_Type::T_BOOLEAN,
-    'api.required' => 0,
-    'api.default' => FALSE,
+    'api.required' => 1,
+    'api.default' => 0,
   ];
 }
 
@@ -56,7 +56,7 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
   if (!$limit) {
     $limit = 100;
   }
-  $dryRun = (bool) $params['dry_run'];
+  $dryRun = (int) $params['dry_run'];
   $query = "SELECT DISTINCT ac.contact_id
             FROM civicrm_activity af
               JOIN civicrm_activity_contact ac ON ac.activity_id = af.id AND ac.record_type_id = 3

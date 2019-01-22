@@ -133,7 +133,7 @@ class api_v3_CleanTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => $firstContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
       'requested_date' => $requestedDate->format('Y-m-d'),
-      'dry_run' => FALSE,
+      'dry_run' => 0,
     ]);
     $activityId = $result['values'][0]['activity_id'];
     $this->assertTrue($result['values'][0]['result'] == 1);

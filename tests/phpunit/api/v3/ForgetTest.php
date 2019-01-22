@@ -13,6 +13,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
     $params = [
       'sequential' => 1,
       'contact_ids' => self::$emptyContactId,
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 0);
@@ -31,6 +32,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$fullContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
       'requested_date' => $requestedDate,
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'register', $params);
     $activityId = $result['values'][0]['activity_id'];
@@ -38,6 +40,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
     $params = [
       'sequential' => 1,
       'contact_ids' => self::$fullContactId,
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 0);
@@ -58,6 +61,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => self::$fullContactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
       'requested_date' => $requestedDate,
+      'dry_run' => 0,
     ];
     $this->callAPISuccess('Gidipirus', 'force', $params);
     sleep(1);
@@ -65,6 +69,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
     $params = [
       'sequential' => 1,
       'contact_ids' => self::$fullContactId,
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 1);
@@ -162,6 +167,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
       'contact_ids' => $contactId,
       'channel' => CRM_Gidipirus_Model_RequestChannel::EMAIL,
       'requested_date' => $requestedDate->format('Y-m-d'),
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'force', $params);
 
@@ -173,6 +179,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
     $params = [
       'sequential' => 1,
       'contact_ids' => $contactId,
+      'dry_run' => 0,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 1);
