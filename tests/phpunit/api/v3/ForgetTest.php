@@ -14,7 +14,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
       'sequential' => 1,
       'contact_ids' => self::$emptyContactId,
     ];
-    $result = $this->callAPISuccess('Gidipirus', 'forget', $params);
+    $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 0);
     $this->assertTrue($result['values'][0]['error'] == 'Forgetme Fulfillment activity does not exist');
     $this->assertEquals(0, $result['updated']);
@@ -39,7 +39,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
       'sequential' => 1,
       'contact_ids' => self::$fullContactId,
     ];
-    $result = $this->callAPISuccess('Gidipirus', 'forget', $params);
+    $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 0);
     $this->assertEquals('Contact is not ready to forget because of fulfillment date is in the future', $result['values'][0]['error']);
     $this->assertEquals(0, $result['updated']);
@@ -66,7 +66,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
       'sequential' => 1,
       'contact_ids' => self::$fullContactId,
     ];
-    $result = $this->callAPISuccess('Gidipirus', 'forget', $params);
+    $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 1);
     $this->assertEquals(1, $result['updated']);
     $this->assertEquals(0, $result['not_updated']);
@@ -174,7 +174,7 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
       'sequential' => 1,
       'contact_ids' => $contactId,
     ];
-    $result = $this->callAPISuccess('Gidipirus', 'forget', $params);
+    $result = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $this->assertTrue($result['values'][0]['result'] == 1);
     $this->assertEquals(1, $result['updated']);
     $this->assertEquals(0, $result['not_updated']);

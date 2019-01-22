@@ -1,7 +1,7 @@
 <?php
 use CRM_Gidipirus_ExtensionUtil as E;
 
-function _civicrm_api3_gidipirus_forget_spec(&$spec) {
+function _civicrm_api3_gidipirus_forg3t_spec(&$spec) {
   $spec['contact_ids'] = [
     'name' => 'contact_ids',
     'title' => E::ts('Array of contacts id'),
@@ -27,7 +27,7 @@ function _civicrm_api3_gidipirus_forget_spec(&$spec) {
  * @return array
  * @throws \CiviCRM_API3_Exception
  */
-function civicrm_api3_gidipirus_forget(&$params) {
+function civicrm_api3_gidipirus_forg3t(&$params) {
   $start = microtime(TRUE);
   $dryRun = (bool) $params['dry_run'];
   if (is_array($params['contact_ids']) && array_key_exists('IN', $params['contact_ids'])) {

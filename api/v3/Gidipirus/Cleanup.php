@@ -80,7 +80,7 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
       'contact_ids' => $contactIds,
       'dry_run' => $dryRun,
     ];
-    $result = civicrm_api3('Gidipirus', 'forget', $forgetParams);
+    $result = civicrm_api3('Gidipirus', 'forg3t', $forgetParams);
     $values = $result['values'];
   }
   $stats = CRM_Gidipirus_Logic_Forget::stats($values);

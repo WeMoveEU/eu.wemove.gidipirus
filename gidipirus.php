@@ -148,7 +148,7 @@ function gidipirus_civicrm_alterAPIPermissions($entity, $action, &$params, &$per
   $permissions['gidipirus']['register'] = ['Access Gidipirus'];
   $permissions['gidipirus']['force'] = ['Access Gidipirus'];
 
-  $permissions['gidipirus']['forget'] = ['Administer Gidipirus'];
+  $permissions['gidipirus']['forg3t'] = ['Administer Gidipirus'];
   $permissions['gidipirus']['cleanup'] = ['Administer Gidipirus'];
   $permissions['gidipirus']['scan'] = ['Administer Gidipirus'];
 }

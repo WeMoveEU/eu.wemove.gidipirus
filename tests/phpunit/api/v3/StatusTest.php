@@ -117,7 +117,7 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
       'sequential' => 1,
       'contact_ids' => self::$emptyContactId,
     ];
-    $result2 = $this->callAPISuccess('Gidipirus', 'forget', $params);
+    $result2 = $this->callAPISuccess('Gidipirus', 'forg3t', $params);
     $params = [
       'sequential' => 1,
       'contact_id' => self::$emptyContactId,
