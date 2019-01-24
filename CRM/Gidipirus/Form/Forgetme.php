@@ -221,6 +221,7 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     $statuses = [
       CRM_Gidipirus_Model_ForgetmeStatus::IN_PROGRESS_VALUE,
       CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE,
+      CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE,
     ];
     $request = [];
     if (in_array($statusId, $statuses)) {
