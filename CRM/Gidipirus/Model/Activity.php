@@ -17,6 +17,7 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
     if (!isset($cache)) {
       $options = [
         'filter' => 1,
+        'icon' => 'fa-trash',
       ];
       $id = self::set(self::FORGETME_FULFILLMENT, $options);
       Civi::cache()->set($key, $id);
