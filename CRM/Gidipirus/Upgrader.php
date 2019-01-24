@@ -56,23 +56,31 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
       }
     }
 
+    $parameters = [
+      'channels=' . implode(',', array_keys(CRM_Gidipirus_Model_RequestChannel::$values)),
+      'limit=500',
+    ];
     $params = [
       'sequential' => 1,
       'api_entity' => "Gidipirus",
       'api_action' => "cleanup",
       'run_frequency' => "Hourly",
-      'parameters' => "channels=" . implode(',', array_keys(CRM_Gidipirus_Model_RequestChannel::$values)),
+      'parameters' => implode("\n", $parameters),
       'name' => "Forget ALL contacts (except expired) that are due to be forgotten",
       'is_active' => 0,
     ];
     civicrm_api3('Job', 'create', $params);
 
+    $parameters = [
+      'channels=' . CRM_Gidipirus_Model_RequestChannel::EXPIRED,
+      'limit=500',
+    ];
     $params = [
       'sequential' => 1,
       'api_entity' => "Gidipirus",
       'api_action' => "cleanup",
       'run_frequency' => "Daily",
-      'parameters' => "channels=" . CRM_Gidipirus_Model_RequestChannel::EXPIRED,
+      'parameters' => implode("\n", $parameters),
       'name' => "Forget ONLY EXPIRED contacts that are due to be forgotten",
       'is_active' => 0,
     ];
