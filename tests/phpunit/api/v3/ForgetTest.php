@@ -153,7 +153,22 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
     }
 
     // todo check phones
-    // todo check Inbound Email activities
+
+    $query = "SELECT a.id, a.subject, a.details
+              FROM civicrm_activity a
+              JOIN civicrm_activity_contact ac ON ac.activity_id = a.id
+              WHERE ac.contact_id = %1 AND a.activity_type_id = %2";
+    $params = [
+      1 => [self::$fullContactId, 'Integer'],
+      2 => [CRM_Gidipirus_Model_Activity::inboundEmailId(), 'Integer'],
+    ];
+    $dao = CRM_Core_DAO::executeQuery($query, $params);
+    $this->assertGreaterThanOrEqual(1, $dao->N, 'There is no any Inbound Email activities');
+    while ($dao->fetch()) {
+      $this->assertEmpty($dao->subject, ts('Subject is not empty for id = %1.', [1 => $dao->id]));
+      $this->assertEmpty($dao->details, ts('Details is not empty for id = %1.', [1 => $dao->id]));
+    }
+
   }
 
   /**
