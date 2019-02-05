@@ -57,6 +57,7 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
     $limit = 100;
   }
   $dryRun = (int) $params['dry_run'];
+
   $query = "SELECT DISTINCT ac.contact_id
             FROM civicrm_activity af
               JOIN civicrm_activity_contact ac ON ac.activity_id = af.id AND ac.record_type_id = 3
@@ -69,10 +70,12 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
     3 => [$limit, 'Integer'],
   ];
   $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
+
   $contactIds = [];
   while ($dao->fetch()) {
     $contactIds[] = $dao->contact_id;
   }
+
   $values = [];
   if ($contactIds) {
     $forgetParams = [
@@ -83,6 +86,7 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
     $result = civicrm_api3('Gidipirus', 'forg3t', $forgetParams);
     $values = $result['values'];
   }
+
   $stats = CRM_Gidipirus_Logic_Forget::stats($values);
   $extraReturnValues = array_merge(['time' => microtime(TRUE) - $start], $stats);
   return civicrm_api3_create_success($values, $params, 'Gidipirus', 'status', $blank, $extraReturnValues);

@@ -4,8 +4,8 @@ class CRM_Gidipirus_Model_Activity extends CRM_Gidipirus_Model {
 
   const FORGETME_FULFILLMENT = 'Forgetme Fulfillment';
   const INBOUND_EMAIL = 'Inbound Email';
-  public const FORGOTTEN_DETAILS = 'Forgotten details';
-  public const FORGOTTEN_SUBJECT = 'Forgotten subject';
+  const FORGOTTEN_DETAILS = 'Forgotten details';
+  const FORGOTTEN_SUBJECT = 'Forgotten subject';
 
   /**
    * Get activity type id for Forgetme Fulfillment
