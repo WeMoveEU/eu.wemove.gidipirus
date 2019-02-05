@@ -165,8 +165,8 @@ class api_v3_ForgetTest extends CRM_Gidipirus_BaseTest {
     $dao = CRM_Core_DAO::executeQuery($query, $params);
     $this->assertGreaterThanOrEqual(1, $dao->N, 'There is no any Inbound Email activities');
     while ($dao->fetch()) {
-      $this->assertEmpty($dao->subject, ts('Subject is not empty for id = %1.', [1 => $dao->id]));
-      $this->assertEmpty($dao->details, ts('Details is not empty for id = %1.', [1 => $dao->id]));
+      $this->assertEquals(CRM_Gidipirus_Model_Activity::FORGOTTEN_SUBJECT, $dao->subject);
+      $this->assertEquals(CRM_Gidipirus_Model_Activity::FORGOTTEN_DETAILS, $dao->details);
     }
 
   }

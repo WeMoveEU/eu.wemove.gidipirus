@@ -24,8 +24,8 @@ class CRM_Gidipirus_Logic_Activity {
       $params = [
         'sequential' => 1,
         'id' => $dao->id,
-        'subject' => '',
-        'details' => '',
+        'subject' => CRM_Gidipirus_Model_Activity::FORGOTTEN_SUBJECT,
+        'details' => CRM_Gidipirus_Model_Activity::FORGOTTEN_DETAILS,
       ];
       $result = civicrm_api3('Activity', 'create', $params);
     }
