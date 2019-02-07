@@ -11,9 +11,9 @@ class CRM_Gidipirus_Logic_Activity {
    */
   public static function clean($contactId) {
     $inboundEmailId = CRM_Gidipirus_Model_Activity::inboundEmailId();
-    $query = "SELECT a.id
+    $query = "SELECT DISTINCT a.id
               FROM civicrm_activity a
-                JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
+                JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id IN (2, 3)
               WHERE a.activity_type_id = %1 AND ac.contact_id = %2";
     $params = [
       1 => [$inboundEmailId, 'Integer'],
