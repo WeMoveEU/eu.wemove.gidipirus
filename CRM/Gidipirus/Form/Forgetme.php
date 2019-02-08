@@ -137,8 +137,11 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         $this->setMessageForce($result);
         break;
     }
-    $url = CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]);
-    CRM_Utils_System::redirect($url);
+
+    if ($this->controller->_QFResponseType == 'html') {
+      $url = CRM_Utils_System::url('civicrm/gidipirus/forgetme', ['cid' => $this->contactId]);
+      CRM_Utils_System::redirect($url);
+    }
   }
 
   private function disableForce() {
