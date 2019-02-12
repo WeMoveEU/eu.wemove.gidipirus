@@ -177,11 +177,8 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   }
 
   private function disableButton($type) {
-    if (CRM_Utils_Array::value('js', $this->buttons[$type])) {
-      $this->buttons[$type]['js'] = array_merge($this->buttons[$type]['js'], ['disabled' => 'disabled']);
-    }
-    else {
-      $this->buttons[$type]['js'] = ['disabled' => 'disabled'];
+    if (array_key_exists($type, $this->buttons)) {
+      unset($this->buttons[$type]);
     }
   }
 
