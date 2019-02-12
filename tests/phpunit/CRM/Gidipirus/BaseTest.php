@@ -17,7 +17,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
   protected static $inactiveMemberContactId;
   protected static $fullContactId;
   protected static $donorContactId;
-  protected static $contributionId;
+  protected static $contributionIds = [];
 
   /**
    * @throws \CiviCRM_API3_Exception
@@ -183,7 +183,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
       'contact_id' => self::$donorContactId,
       'contribution_status_id' => "Completed",
     ]);
-    self::$contributionId = $result['id'];
+    self::$contributionIds[] = $result['id'];
 
     return self::$donorContactId;
   }
@@ -192,9 +192,11 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
    * @throws \CiviCRM_API3_Exception
    */
   private static function deleteContacts() {
-    civicrm_api3('Contribution', 'delete', [
-      'id' => self::$contributionId,
-    ]);
+    foreach (self::$contributionIds as $contributionId) {
+      civicrm_api3('Contribution', 'delete', [
+        'id' => $contributionId,
+      ]);
+    }
     foreach (self::$contactIds as $contactId) {
       $params = [
         'sequential' => 1,

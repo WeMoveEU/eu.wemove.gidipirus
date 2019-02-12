@@ -56,4 +56,23 @@ class api_v3_ScanTest extends CRM_Gidipirus_BaseTest {
     $this->assertFalse($markedAsExpired);
   }
 
+  /**
+   * @throws \CRM_Gidipirus_Exception_NoFulfillment
+   * @throws \CRM_Gidipirus_Exception_NotReadyToForget
+   * @throws \CRM_Gidipirus_Exception_TooManyFulfillment
+   * @throws \CiviCRM_API3_Exception
+   */
+  public function testDonorsShouldNotBeScanned() {
+    $contactId = self::donorContact();
+    $result = $this->callAPISuccess('Gidipirus', 'scan', ['dry_run' => 0]);
+
+    $requestId = NULL;
+    try {
+      $requestId = CRM_Gidipirus_Logic_Register::hasRequest($contactId);
+    }
+    catch (CRM_Gidipirus_Exception_NoFulfillment $exception) {
+      $this->assertNull($requestId, 'There should not be a request');
+    }
+  }
+
 }
