@@ -27,13 +27,13 @@ class api_v3_StatusTest extends CRM_Gidipirus_BaseTest {
   /**
    * Check if donor contact has blocked status
    */
-  public function testDonorContactIsBlocked() {
+  public function testDonorContactIsReady() {
     $params = [
       'sequential' => 1,
       'contact_id' => self::$donorContactId,
     ];
     $result = $this->callAPISuccess('Gidipirus', 'status', $params);
-    $this->assertEquals(CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE, $result['values'][0]['status']);
+    $this->assertEquals(CRM_Gidipirus_Model_ForgetmeStatus::READY_VALUE, $result['values'][0]['status']);
   }
 
   /**

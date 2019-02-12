@@ -37,9 +37,6 @@ function civicrm_api3_gidipirus_status(&$params) {
   if ($daoContact->contact_type != 'Individual') {
     $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::NOT_APPLICABLE_VALUE;
   }
-  elseif ($daoContact->is_donor) {
-    $forgetmeStatus = CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE;
-  }
   else {
     $query = "SELECT
                 CASE

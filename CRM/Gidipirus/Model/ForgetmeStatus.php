@@ -8,7 +8,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const IN_PROGRESS = 'In Progress';
   const OBSOLETE = 'Obsolete';
   const COMPLETED = 'Completed';
-  const BLOCKED = 'Blocked';
   const TOO_MANY_REQUESTS = 'Too Many Requests';
   const NOT_APPLICABLE = 'Not Applicable';
 
@@ -16,7 +15,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const IN_PROGRESS_VALUE = 20;
   const OBSOLETE_VALUE = 30;
   const COMPLETED_VALUE = 40;
-  const BLOCKED_VALUE = 50;
   const TOO_MANY_REQUESTS_VALUE = 60;
   const NOT_APPLICABLE_VALUE = 70;
 
@@ -33,7 +31,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::IN_PROGRESS => self::IN_PROGRESS_VALUE,
     self::OBSOLETE => self::OBSOLETE_VALUE,
     self::COMPLETED => self::COMPLETED_VALUE,
-    self::BLOCKED => self::BLOCKED_VALUE,
     self::TOO_MANY_REQUESTS => self::TOO_MANY_REQUESTS_VALUE,
     self::NOT_APPLICABLE => self::NOT_APPLICABLE_VALUE,
   ];
@@ -43,7 +40,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::IN_PROGRESS_VALUE => self::IN_PROGRESS,
     self::OBSOLETE_VALUE => self::OBSOLETE,
     self::COMPLETED_VALUE => self::COMPLETED,
-    self::BLOCKED_VALUE => self::BLOCKED,
     self::TOO_MANY_REQUESTS_VALUE => self::TOO_MANY_REQUESTS,
     self::NOT_APPLICABLE_VALUE => self::NOT_APPLICABLE,
   ];
@@ -53,7 +49,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     self::IN_PROGRESS_VALUE => self::IN_PROGRESS_DESC,
     self::OBSOLETE_VALUE => self::OBSOLETE_DESC,
     self::COMPLETED_VALUE => self::COMPLETED_DESC,
-    self::BLOCKED_VALUE => self::BLOCKED_DESC,
     self::TOO_MANY_REQUESTS_VALUE => self::TOO_MANY_REQUESTS_DESC,
     self::NOT_APPLICABLE_VALUE => self::NOT_APPLICABLE_DESC,
   ];
@@ -63,7 +58,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     'inprogress' => self::IN_PROGRESS_VALUE,
     'obsolete' => self::OBSOLETE_VALUE,
     'completed' => self::COMPLETED_VALUE,
-    'blocked' => self::BLOCKED_VALUE,
     'toomanyrequest' => self::TOO_MANY_REQUESTS_VALUE,
     'notapplicable' => self::NOT_APPLICABLE_VALUE,
   ];
@@ -130,23 +124,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
     $cache = Civi::cache()->get($key);
     if (!isset($cache)) {
       $id = self::set(self::COMPLETED);
-      Civi::cache()->set($key, $id);
-      return $id;
-    }
-    return $cache;
-  }
-
-  /**
-   * Get Forgetme status - Blocked
-   *
-   * @return int|mixed
-   * @throws \CiviCRM_API3_Exception
-   */
-  public static function blocked() {
-    $key = __CLASS__ . __FUNCTION__;
-    $cache = Civi::cache()->get($key);
-    if (!isset($cache)) {
-      $id = self::set(self::BLOCKED);
       Civi::cache()->set($key, $id);
       return $id;
     }

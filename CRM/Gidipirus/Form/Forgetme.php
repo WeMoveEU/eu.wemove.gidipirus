@@ -205,7 +205,6 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
 
       case CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE:
       case CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::BLOCKED_VALUE:
       case CRM_Gidipirus_Model_ForgetmeStatus::TOO_MANY_REQUESTS_VALUE:
       case CRM_Gidipirus_Model_ForgetmeStatus::NOT_APPLICABLE_VALUE:
         $this->disableRegister();
