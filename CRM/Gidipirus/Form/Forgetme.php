@@ -57,6 +57,18 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         'js' => ['onclick' => "return confirm('" . $forceQuestion . "');"],
       ],
     ];
+    if (CRM_Core_Permission::check('Administer Gidipirus')) {
+      $forgetName = E::ts('Forget immediately');
+      $forgetQuestion = E::ts('Do you want to forget this contact immediately?');
+      $this->buttons['forget'] = [
+        'type' => 'next',
+        'name' => $forgetName,
+        'isDefault' => FALSE,
+        'icon' => 'fa-bolt',
+        'subName' => 'forget',
+        'js' => ['onclick' => "return confirm('" . $forgetQuestion . "');"],
+      ];
+    }
     parent::__construct($state, $action, $method, $name);
   }
 
@@ -136,6 +148,14 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         $result = $this->force($this->contactId, $channel, $requestDate, $this->activityId);
         $this->setMessageForce($result);
         break;
+
+      case 'next':
+        if (CRM_Core_Permission::check('Administer Gidipirus')) {
+          $result = $this->force($this->contactId, $channel, $requestDate, $this->activityId);
+          $result = $this->forget($this->contactId);
+          $this->setMessageForget($result);
+        }
+        break;
     }
 
     if ($this->controller->_QFResponseType == 'html') {
@@ -150,6 +170,10 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
 
   private function disableRegister() {
     $this->disableButton('register');
+  }
+
+  private function disableForget() {
+    $this->disableButton('forget');
   }
 
   private function disableButton($type) {
@@ -204,11 +228,16 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         break;
 
       case CRM_Gidipirus_Model_ForgetmeStatus::OBSOLETE_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::TOO_MANY_REQUESTS_VALUE:
-      case CRM_Gidipirus_Model_ForgetmeStatus::NOT_APPLICABLE_VALUE:
         $this->disableRegister();
         $this->disableForce();
+        break;
+
+      case CRM_Gidipirus_Model_ForgetmeStatus::TOO_MANY_REQUESTS_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::NOT_APPLICABLE_VALUE:
+      case CRM_Gidipirus_Model_ForgetmeStatus::COMPLETED_VALUE:
+        $this->disableRegister();
+        $this->disableForce();
+        $this->disableForget();
         break;
     }
   }
@@ -278,6 +307,21 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
   }
 
   /**
+   * @param int $contactId
+   *
+   * @return array
+   * @throws \CiviCRM_API3_Exception
+   */
+  private function forget($contactId) {
+    $params = [
+      'sequential' => 1,
+      'contact_ids' => $contactId,
+    ];
+    $result = civicrm_api3('Gidipirus', 'forg3t', $params);
+    return $result['values'][0]['result'];
+  }
+
+  /**
    * @param $result
    */
   private function setMessageRegister($result) {
@@ -298,6 +342,18 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
     }
     else {
       CRM_Core_Session::setStatus(E::ts('There is a problem with forgetting the contact now: %1', [1 => $result['error']]), 'Gidipirus');
+    }
+  }
+
+  /**
+   * @param $result
+   */
+  private function setMessageForget($result) {
+    if ($result) {
+      CRM_Core_Session::setStatus(E::ts('The contact was forgotten'), 'Gidipirus', 'success');
+    }
+    else {
+      CRM_Core_Session::setStatus(E::ts('There is a problem with forgetting the contact immediately: %1', [1 => $result['error']]), 'Gidipirus');
     }
   }
 
