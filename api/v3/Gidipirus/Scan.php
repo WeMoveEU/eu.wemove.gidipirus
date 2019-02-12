@@ -49,11 +49,8 @@ function civicrm_api3_gidipirus_scan(&$params) {
                  WHERE a1.activity_type_id IN (" . implode(', ', $scannedActivitiesId) . ")
                 GROUP BY ac1.contact_id
               ) latest_ac ON latest_ac.contact_id = c.id
-              LEFT JOIN (
-                SELECT contact_id
-                FROM civicrm_contribution ct
-                WHERE ct.contribution_status_id = 1
-              ) donors ON donors.contact_id = c.id
+              LEFT JOIN civicrm_contribution donors ON donors.contact_id = c.id
+              LEFT JOIN civicrm_contribution_recur recur_donors ON recur_donors.contact_id = c.id
               LEFT JOIN (
                 SELECT ac2.contact_id, ac2.activity_id
                 FROM civicrm_activity_contact ac2
@@ -64,6 +61,7 @@ function civicrm_api3_gidipirus_scan(&$params) {
               JOIN civicrm_subscription_history sh ON sh.group_id = %2 AND sh.contact_id = c.id
             WHERE c.contact_type = 'Individual'
                 AND donors.contact_id IS NULL
+                AND recur_donors.contact_id IS NULL
                 AND request.contact_id IS NULL
                 AND gc.id IS NULL
                 AND latest_ac.latest_date_time < (CURRENT_DATE() - INTERVAL 1 YEAR)

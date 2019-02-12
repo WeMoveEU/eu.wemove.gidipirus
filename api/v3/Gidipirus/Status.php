@@ -23,10 +23,7 @@ function civicrm_api3_gidipirus_status(&$params) {
   $start = microtime(TRUE);
   $contactId = $params['contact_id'];
   $queryContact = "SELECT
-                     c.contact_type, (
-                       SELECT count(ct.id)
-                       FROM civicrm_contribution ct
-                       WHERE contact_id = c.id AND contribution_status_id = 1) is_donor
+                     c.contact_type
                    FROM civicrm_contact c
                    WHERE c.id = %1";
   $queryContactParams = [
