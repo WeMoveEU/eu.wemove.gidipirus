@@ -28,7 +28,7 @@ function _civicrm_api3_gidipirus_cleanup_spec(&$spec) {
 }
 
 /**
- * Forget all contacts that are due to be forgotten (based on activity_date_time)
+ * Forget all contacts (no donors) that are due to be forgotten (based on activity_date_time)
  *
  * @param $params
  *
@@ -61,7 +61,10 @@ function civicrm_api3_gidipirus_cleanup(&$params) {
   $query = "SELECT DISTINCT ac.contact_id
             FROM civicrm_activity af
               JOIN civicrm_activity_contact ac ON ac.activity_id = af.id AND ac.record_type_id = 3
+              LEFT JOIN civicrm_contribution ct ON ac.contact_id = ct.contact_id
+              LEFT JOIN civicrm_contribution_recur cr ON ac.contact_id = cr.contact_id
             WHERE af.activity_type_id = %1 AND af.status_id = %2 AND af.activity_date_time < NOW()
+              AND ct.id IS NULL AND cr.id IS NULL
               AND af.location IN ('" . implode("', '", $channels) . "')
             LIMIT %3";
   $queryParams = [
