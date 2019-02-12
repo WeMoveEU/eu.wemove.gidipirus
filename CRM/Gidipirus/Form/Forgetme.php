@@ -35,10 +35,10 @@ class CRM_Gidipirus_Form_Forgetme extends CRM_Core_Form {
         'order' => 20,
       ],
     ];
-    $registerName = E::ts('Forget within %1 days', [1 => CRM_Gidipirus_Settings::scheduledDays()]);
+    $registerName = E::ts('Schedule for forgetting within %1 days', [1 => CRM_Gidipirus_Settings::scheduledDays()]);
     $registerQuestion = E::ts('Do you want to forget this contact within %1 days?', [1 => CRM_Gidipirus_Settings::scheduledDays()]);
-    $forceName = E::ts('Forget now');
-    $forceQuestion = E::ts('Do you want to forget this contact now? This means that within about 1 hour this contact will be forgotten.');
+    $forceName = E::ts('Schedule for forgetting within 1 hour');
+    $forceQuestion = E::ts('Do you want to forget this contact within 1 hour?');
     $this->buttons = [
       'register' => [
         'type' => 'submit',
