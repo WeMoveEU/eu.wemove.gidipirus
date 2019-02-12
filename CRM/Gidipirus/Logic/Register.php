@@ -18,7 +18,7 @@ class CRM_Gidipirus_Logic_Register {
    */
   public static function hasRequest($contactId, $isReadyToForget = FALSE) {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
-    $query = "SELECT a.id, IF(activity_date_time < NOW(), 1, 0) is_ready
+    $query = "SELECT a.id, IF(activity_date_time <= NOW(), 1, 0) is_ready
               FROM civicrm_activity a
                 JOIN civicrm_activity_contact ac ON ac.activity_id = a.id AND ac.record_type_id = 3
               WHERE a.activity_type_id = %1 AND a.status_id IN (%3, %4) AND ac.contact_id = %2";
