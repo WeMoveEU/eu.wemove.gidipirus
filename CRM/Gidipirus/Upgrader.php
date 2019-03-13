@@ -41,20 +41,6 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
    * @throws \CiviCRM_API3_Exception
    */
   public function upgrade_01_cleanup_job() {
-    $result = civicrm_api3('Job', 'get', [
-      'sequential' => 1,
-      'api_entity' => "Gidipirus",
-      'api_action' => "cleanup",
-    ]);
-    if ($result['count']) {
-      foreach ($result['values'] as $v) {
-        civicrm_api3('Job', 'delete', [
-          'sequential' => 1,
-          'id' => $v['id'],
-        ]);
-      }
-    }
-
     $parameters = [
       'channels=' . implode(',', array_keys(CRM_Gidipirus_Model_RequestChannel::$values)),
       'limit=500',
