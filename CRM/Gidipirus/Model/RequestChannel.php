@@ -9,6 +9,7 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
   const PERSONAL = 'personal';
   const PAPER_LETTER = 'paper-letter';
   const EXPIRED = 'expired';
+  const THIRD_PARTY_MAILJET = 'third-party-mailjet';
 
   public static $valid = [
     self::EMAIL,
@@ -16,6 +17,7 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
     self::PERSONAL,
     self::PAPER_LETTER,
     self::EXPIRED,
+    self::THIRD_PARTY_MAILJET
   ];
 
   public static $values = [
@@ -23,6 +25,7 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
     self::PHONE => self::PHONE,
     self::PERSONAL => self::PERSONAL,
     self::PAPER_LETTER => self::PAPER_LETTER,
+    self::THIRD_PARTY_MAILJET => self::THIRD_PARTY_MAILJET,
   ];
 
   /**
@@ -104,6 +107,23 @@ class CRM_Gidipirus_Model_RequestChannel extends CRM_Gidipirus_Model {
     $cache = Civi::cache()->get($key);
     if (!isset($cache)) {
       $id = self::set(self::EXPIRED);
+      Civi::cache()->set($key, $id);
+      return $id;
+    }
+    return $cache;
+  }
+
+  /**
+   * Get Request channel - Third Party (Mailjet)
+   *
+   * @return int|mixed
+   * @throws \CiviCRM_API3_Exception
+   */
+  public static function thirdPartyMailjet() {
+    $key = __CLASS__ . __FUNCTION__;
+    $cache = Civi::cache()->get($key);
+    if (!isset($cache)) {
+      $id = self::set(self::THIRD_PARTY_MAILJET);
       Civi::cache()->set($key, $id);
       return $id;
     }
