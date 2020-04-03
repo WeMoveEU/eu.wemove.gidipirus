@@ -4,6 +4,7 @@ class CRM_Gidipirus_Logic_Consent {
 
   private static $dpaType;
   private static $consentStatuses;
+  private static $customFields;
 
   /**
    * c.f. API doc of get_consents_required
@@ -61,6 +62,59 @@ class CRM_Gidipirus_Logic_Consent {
   }
 
   /**
+   * Store the fact that a contact (identified by contact_id) has been requested or has answered a consent (identified by consent_id):
+   *  - Create a consent activity
+   *  - Set the contact GDPR custom fields
+   */
+  public function addConsent($contactId, $consent, $attribution) {
+		$params = [
+      'source_contact_id' => $contactId,
+      'campaign_id' => $attribution->campaignId,
+      'activity_type_id' => self::consentActivityType(),
+      'activity_date_time' => $consent->date,
+      'subject' => $consent->version,
+      'location' => $consent->language,
+      'status_id' => self::consentActivityStatus($consent->status),
+      CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_source') => $attribution->source,
+      CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_medium') => $attribution->medium,
+      CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_campaign') => $attribution->campaign,
+    ];
+    $result = civicrm_api3('Activity', 'create', $params);
+    if ($result['is_error']) {
+      throw new Exception($result['error_message']);
+    }
+
+    if ($consent->status != 'Confirmed') {
+      $params= [
+        'id' => $contactId,
+        self::field('gdpr.Consent_version')  => 'null',
+        self::field('gdpr.Consent_date')     => 'null',
+        self::field('gdpr.Consent_language') => 'null',
+        self::field('gdpr.campaign_id')      => 'null',
+        self::field('gdpr.utm_source')       => 'null',
+        self::field('gdpr.utm_medium')       => 'null',
+        self::field('gdpr.utm_campaign')     => 'null',
+      ];
+    } else {
+      $params= [
+        'id' => $contactId,
+        self::field('gdpr.Consent_version')  => $consent->version,
+        self::field('gdpr.Consent_date')     => $consent->date,
+        self::field('gdpr.Consent_language') => $consent->language,
+        self::field('gdpr.campaign_id')      => $attribution->campaignId,
+        self::field('gdpr.utm_source')       => $attribution->source,
+        self::field('gdpr.utm_medium')       => $attribution->medium,
+        self::field('gdpr.utm_campaign')     => $attribution->campaign,
+      ];
+    }
+    $result = civicrm_api3('Contact', 'create', $params);
+    if ($result['is_error']) {
+      CRM_Core_Error::debug_log_message("Could not update the GDPR custom fields for contact $contactId");
+    }
+    return TRUE;
+  }
+
+  /**
    * From a consent id, return the string to compare to previous consent version in order to check its compatibility
    * If the consent id contains a '_' (partner consent), returns the full version (id stripped of language)
    * Otherwise return the major version only
@@ -93,7 +147,7 @@ class CRM_Gidipirus_Logic_Consent {
       self::$consentStatuses = [
         'Pending'   => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Scheduled'),
         'Confirmed' => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Completed'),
-        'Rejected'  => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'optout'),
+        'Rejected'  => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'optout'), //Comes from Speakcivi
         'Cancelled' => CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'status_id', 'Cancelled'),
       ];
     }
@@ -101,6 +155,25 @@ class CRM_Gidipirus_Logic_Consent {
       return self::$consentStatuses[$status];
     } else {
       return self::$consentStatuses;
+    }
+  }
+
+  public static function field($name = NULL) {
+    if (!self::$customFields) {
+      $gdprFields = ['Consent_date', 'Consent_version', 'campaign_id', 'Consent_language', 'utm_source', 'utm_medium', 'utm_campaign'];
+      foreach ($gdprFields as $field) {
+        $result = civicrm_api3('CustomField', 'get', ['custom_group_id' => 'GDPR_temporary', 'name' => $field]);
+        if ($result['count'] == 1) {
+          self::$customFields["gdpr.$field"] = 'custom_' . $result['id'];
+        } else {
+          throw new Exception("Could not find GDPR custom field $field");
+        }
+      }
+    }
+    if ($name) {
+      return self::$customFields[$name];
+    } else {
+      return self::$customFields;
     }
   }
 }
