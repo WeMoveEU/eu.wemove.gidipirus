@@ -1,27 +1,12 @@
 <?php
 use CRM_Gidipirus_ExtensionUtil as E;
 
-function _civicrm_api3_gidipirus_set_consent_status_spec(&$spec) {
+function _civicrm_api3_gidipirus_cancel_consents_spec(&$spec) {
   $spec['contact_id'] = [
     'name' => 'contact_id',
     'title' => 'Contact id',
     'description' => 'CiviCRM id of the user',
     'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 1,
-  ];
-  $spec['consent_id'] = [
-    'name' => 'consent_id',
-    'title' => 'Consent id',
-    'description' => 'Id of the consent being updated by the user',
-    'type' => CRM_Utils_Type::T_STRING,
-    'api.required' => 1,
-  ];
-  $spec['status'] = [
-    'name' => 'status',
-    'title' => 'Status',
-    'description' => 'New status of the consent',
-    'type' => CRM_Utils_Type::T_STRING,
-    'options' => CRM_Gidipirus_Model_Consent::statusOptions(),
     'api.required' => 1,
   ];
   $spec['date'] = [
@@ -63,22 +48,16 @@ function _civicrm_api3_gidipirus_set_consent_status_spec(&$spec) {
 }
 
 /**
- * Store the fact that a contact (identified by contact_id) has been requested or has answered a consent (identified by consent_id).
- * Values for status:
- *  - Pending: the consent was requested to the contact asynchronously, and is awaiting an answer
- *  - Confirmed: the consent is accepted by the contact
- *  - Rejected: the consent is not accepted by the contact
- *  - Cancelled: the previously accepted consent is withdrawn by the contact
+ * Cancel all the currently confirmed consents of the contact (identified by contact_id)
+ * The date and attribution parameters are used to record the cancellation event.
+ * Return the ids of the cancelled consents.
  */
-function civicrm_api3_gidipirus_set_consent_status($params) {
+function civicrm_api3_gidipirus_cancel_consents($params) {
   $c = new CRM_Gidipirus_Logic_Consent();
-  $consent = CRM_Gidipirus_Model_Consent::fromId($params['consent_id'], $params['status'], $params['date']);
   $attribution = new CRM_Gidipirus_Model_Attribution(
     $params['campaign_id'], $params['utm_source'], $params['utm_medium'], $params['utm_campaign']
   );
-  if ($c->addConsent($params['contact_id'], $consent, $attribution)) {
-    return civicrm_api3_create_success(NULL, $params);
-  } else {
-    return civicrm_api3_create_error("Unknown error", $params);
-  }
+  $cancelledConsents = $c->cancelConsents($params['contact_id'], $params['date'], $attribution);
+  $cancelledIds = array_map(function ($c) { return $c->id(); }, $cancelledConsents);
+  return civicrm_api3_create_success($cancelledIds, $params);
 }

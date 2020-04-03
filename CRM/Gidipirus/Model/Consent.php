@@ -4,12 +4,20 @@ class CRM_Gidipirus_Model_Consent {
 
   private static $statuses;
 
-  public function __construct($consent_id, $status, $date) {
-    list($version, $language) = explode('-', $consent_id);
+  public function __construct($version, $language, $status, $date) {
     $this->version = $version;
     $this->language = $language;
     $this->status = $status;
     $this->date = $date;
+  }
+
+  public function id() {
+    return $this->version . '-' . $this->language;
+  }
+
+  public static function fromId($consentId, $status, $date) {
+    list($version, $language) = explode('-', $consentId);
+    return new self($version, $language, $status, $date);
   }
 
   /**

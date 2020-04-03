@@ -165,6 +165,24 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     self::deleteContact($contactId);
   }
 
+  /**
+   * Cancelling a simple member creates a cancel activity and clears the gdpr fields
+   */
+  public function testCancelMember() {
+    self::createContact("Clean Member", self::$for_update, [
+        ['id' => self::$wemove_en, 'date' => '2016-06-06 07:06:06', 'status' => 'Completed'],
+    ]);
+    $contactId = self::$contactIds[self::$for_update];
+    $params = [
+      'contact_id' => $contactId,
+      'date' => '2019-09-09 09:09:09',
+    ];
+    $result = $this->callAPISuccess('Gidipirus', 'cancel_consents', $params);
+    $this->assertHasConsent($params + ['status' => 'Cancelled', 'consent_id' => self::$wemove_en]);
+    $this->assertHasEmptyGdprFields($params);
+    self::deleteContact($contactId);
+  }
+
   public function assertNotRequired($result) {
     $this->assertEquals(array(), $result['values']['consents_required']);
   }

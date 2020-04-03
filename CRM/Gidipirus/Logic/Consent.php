@@ -23,7 +23,7 @@ class CRM_Gidipirus_Logic_Consent {
             FROM civicrm_email e
               JOIN civicrm_activity_contact ac ON ac.contact_id = e.contact_id
               JOIN civicrm_activity a ON a.id = ac.activity_id AND a.activity_type_id = %2
-            WHERE e.email = %1 AND e.is_primary = 1
+            WHERE e.email = %1 AND e.is_primary = 1 AND a.status_id IN (%3, %4)
             GROUP BY consent_version, a.status_id) t
           GROUP BY consent_version) t2
         WHERE max_completed_date > max_cancelled_date
@@ -67,6 +67,28 @@ class CRM_Gidipirus_Logic_Consent {
    *  - Set the contact GDPR custom fields
    */
   public function addConsent($contactId, $consent, $attribution) {
+    $this->addConsentActivity($contactId, $consent, $attribution);
+    $this->setGdprFields($contactId, $consent, $attribution);
+    return TRUE;
+  }
+
+  /**
+   * c.f. API doc of cancel_consents
+   * Create an activity for each cancelled consent, and clear the GDPR fields
+   */
+  public function cancelConsents($contactId, $cancelDate, $attribution) {
+    $activeConsents = $this->getConfirmedConsents($contactId);
+    foreach ($activeConsents as $consent) {
+      $cancelConsent = new CRM_Gidipirus_Model_Consent($consent->version, $consent->language, 'Cancelled', $cancelDate);
+      $this->addConsentActivity($contactId, $cancelConsent, $attribution);
+    }
+    if (isset($cancelConsent)) {
+      $this->setGdprFields($contactId, $cancelConsent, $attribution);
+    }
+    return $activeConsents;
+  }
+
+  private function addConsentActivity($contactId, $consent, $attribution) {
 		$params = [
       'source_contact_id' => $contactId,
       'campaign_id' => $attribution->campaignId,
@@ -83,7 +105,9 @@ class CRM_Gidipirus_Logic_Consent {
     if ($result['is_error']) {
       throw new Exception($result['error_message']);
     }
+  }
 
+  private function setGdprFields($contactId, $consent, $attribution) {
     if ($consent->status != 'Confirmed') {
       $params= [
         'id' => $contactId,
@@ -111,7 +135,46 @@ class CRM_Gidipirus_Logic_Consent {
     if ($result['is_error']) {
       CRM_Core_Error::debug_log_message("Could not update the GDPR custom fields for contact $contactId");
     }
-    return TRUE;
+  }
+
+  private function getConfirmedConsents($contactId) {
+    $query = "
+        SELECT version, a2.location AS language, max_completed_date AS `date`
+        FROM (
+          SELECT
+            version, MAX(completed_date) AS max_completed_date, MAX(cancelled_date) AS max_cancelled_date
+          FROM (
+            SELECT
+              a.subject AS version,
+              IF(a.status_id = %3, MAX(a.activity_date_time), '1970-01-01') AS completed_date,
+              IF(a.status_id = %4, MAX(a.activity_date_time), '1970-01-01') AS cancelled_date
+            FROM civicrm_activity_contact ac
+            JOIN civicrm_activity a ON a.id = ac.activity_id AND a.activity_type_id = %2
+            WHERE ac.contact_id = %1 AND a.status_id IN (%3, %4)
+            GROUP BY version, a.status_id
+          ) t
+          GROUP BY version
+        ) t2
+        JOIN civicrm_activity_contact ac2 ON ac2.contact_id = %1
+        JOIN civicrm_activity a2
+          ON a2.id = ac2.activity_id AND a2.subject = t2.version
+          AND a2.activity_date_time = max_completed_date AND a2.activity_type_id = %2
+        WHERE max_completed_date > max_cancelled_date
+    ";
+
+    $queryParams = [
+      1 => [$contactId, 'Integer'],
+      2 => [self::consentActivityType(), 'Integer'],
+      3 => [self::consentActivityStatus('Confirmed'), 'Integer'],
+      4 => [self::consentActivityStatus('Cancelled'), 'Integer']
+    ];
+    $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
+
+    $activeConsents = [];
+    while ($dao->fetch()) {
+      $activeConsents[] = new CRM_Gidipirus_Model_Consent($dao->version, $dao->language, 'Confirmed', $dao->date);
+    }
+    return $activeConsents;
   }
 
   /**
