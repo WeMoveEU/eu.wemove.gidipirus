@@ -166,7 +166,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
   }
 
   /**
-   * Cancelling a simple member creates a cancel activity and clears the gdpr fields
+   * Cancelling a simple member creates a cancel activity, a leave activity and clears the gdpr fields
    */
   public function testCancelMember() {
     self::createContact("Clean Member", self::$for_update, [
@@ -176,9 +176,11 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     $params = [
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
+      'method' => 'unit-test',
     ];
     $result = $this->callAPISuccess('Gidipirus', 'cancel_consents', $params);
     $this->assertHasConsent($params + ['status' => 'Cancelled', 'consent_id' => self::$wemove_en]);
+    $this->assertHasLeave($params);
     $this->assertHasEmptyGdprFields($params);
     self::deleteContact($contactId);
   }
@@ -205,7 +207,19 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'activity_date_time', $params['date'],
     ];
     $result = $this->callAPISuccess('Activity', 'get', $getParams);
-    $this->assertEquals(1, $result['count']);
+    $this->assertEquals(1, $result['count'], "The contact does not have the expected consent activity");
+  }
+
+  public function assertHasLeave($params) {
+    $getParams = [
+      'source_contact_id' => $params['contact_id'],
+      'activity_type_id' => 'leave',
+      'status_id' => 'Completed',
+      'subject' => $params['method'],
+      'activity_date_time', $params['date'],
+    ];
+    $result = $this->callAPISuccess('Activity', 'get', $getParams);
+    $this->assertEquals(1, $result['count'], "The contact does not have the expected leave activity");
   }
 
   public function assertHasGdprFields($params) {

@@ -33,6 +33,8 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
     CRM_Gidipirus_Settings::emailTemplate();
     CRM_Gidipirus_Settings::scannedActivitiesId();
 
+    CRM_Gidipirus_Logic_Consent::createActivityTypes();
+
     $this->upgrade_01_cleanup_job();
 
     $this->installGdprCustomFields();

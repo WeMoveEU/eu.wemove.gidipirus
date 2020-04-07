@@ -9,6 +9,7 @@ class CRM_Gidipirus_Model_Consent {
     $this->language = $language;
     $this->status = $status;
     $this->date = $date;
+    $this->method = $method;
   }
 
   public function id() {
@@ -34,4 +35,5 @@ class CRM_Gidipirus_Model_Consent {
     }
     return self::$statuses;
   }
+
 }

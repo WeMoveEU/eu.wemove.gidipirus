@@ -3,6 +3,8 @@
 class CRM_Gidipirus_Logic_Consent {
 
   private static $dpaType;
+  private static $joinType;
+  private static $leaveType;
   private static $consentStatuses;
   private static $customFields;
 
@@ -76,27 +78,40 @@ class CRM_Gidipirus_Logic_Consent {
    * c.f. API doc of cancel_consents
    * Create an activity for each cancelled consent, and clear the GDPR fields
    */
-  public function cancelConsents($contactId, $cancelDate, $attribution) {
+  public function cancelConsents($contactId, $cancelDate, $method, $attribution) {
     $activeConsents = $this->getConfirmedConsents($contactId);
     foreach ($activeConsents as $consent) {
       $cancelConsent = new CRM_Gidipirus_Model_Consent($consent->version, $consent->language, 'Cancelled', $cancelDate);
       $this->addConsentActivity($contactId, $cancelConsent, $attribution);
     }
+
     if (isset($cancelConsent)) {
       $this->setGdprFields($contactId, $cancelConsent, $attribution);
     }
+
+    $this->addLeaveActivity($contactId, $cancelDate, $method, $attribution);
+
     return $activeConsents;
   }
 
   private function addConsentActivity($contactId, $consent, $attribution) {
+    $this->addActivity($contactId, self::consentActivityType(), $consent->date, $consent->version,
+                       $attribution, self::consentActivityStatus($consent->status), $consent->language);
+  }
+
+  private function addLeaveActivity($contactId, $cancelDate, $method, $attribution) {
+    $this->addActivity($contactId, self::leaveActivityType(), $cancelDate, $method, $attribution);
+  }
+
+  private function addActivity($contactId, $actType, $actDate, $subject, $attribution, $status = 'Completed', $location = NULL) {
 		$params = [
       'source_contact_id' => $contactId,
       'campaign_id' => $attribution->campaignId,
-      'activity_type_id' => self::consentActivityType(),
-      'activity_date_time' => $consent->date,
-      'subject' => $consent->version,
-      'location' => $consent->language,
-      'status_id' => self::consentActivityStatus($consent->status),
+      'activity_type_id' => $actType,
+      'activity_date_time' => $actDate,
+      'subject' => $subject,
+      'location' => $location,
+      'status_id' => $status,
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_source') => $attribution->source,
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_medium') => $attribution->medium,
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_campaign') => $attribution->campaign,
@@ -203,6 +218,26 @@ class CRM_Gidipirus_Logic_Consent {
   }
 
   /**
+   * Activity type used to record when contacts join the main membership group
+   */
+  public static function joinActivityType() {
+    if (!self::$joinType) {
+      self::$joinType = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'join');
+    }
+    return self::$joinType;
+  }
+
+  /**
+   * Activity type used to record when contacts leave the main membership group
+   */
+  public static function leaveActivityType() {
+    if (!self::$leaveType) {
+      self::$leaveType = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'leave');
+    }
+    return self::$leaveType;
+  }
+
+  /**
    * Mapping ConsentStatus => ActivityStatus
    */
   public static function consentActivityStatus($status = NULL) {
@@ -238,5 +273,11 @@ class CRM_Gidipirus_Logic_Consent {
     } else {
       return self::$customFields;
     }
+  }
+
+  public static function createActivityTypes() {
+    self::$dpaType = CRM_Gidipirus_Model::optionValue('activity_type', 'SLA Acceptance', ['title' => 'Data Policy Acceptance']);
+    self::$joinType = CRM_Gidipirus_Model::optionValue('activity_type', 'join', ['title' => 'Join']);
+    self::$leaveType = CRM_Gidipirus_Model::optionValue('activity_type', 'leave', ['title' => 'Leave']);
   }
 }
