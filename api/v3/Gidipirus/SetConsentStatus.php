@@ -31,6 +31,20 @@ function _civicrm_api3_gidipirus_set_consent_status_spec(&$spec) {
     'type' => CRM_Utils_Type::T_TIMESTAMP,
     'api.required' => 1,
   ];
+  $spec['is_member'] = [
+    'name' => 'is_member',
+    'title' => 'Is currently member',
+    'description' => 'Whether the user was a member before changing the consent status.',
+    'type' => CRM_Utils_Type::T_BOOLEAN,
+    'api.required' => 1,
+  ];
+  $spec['method'] = [
+    'name' => 'method',
+    'title' => 'Method',
+    'Description' => 'How the user requested change of consent status',
+    'type' => CRM_Utils_Type::T_STRING,
+    'api.required' => 1,
+  ];
   $spec['campaign_id'] = [
     'name' => 'campaign_id',
     'title' => 'Campaign id',
@@ -74,9 +88,9 @@ function civicrm_api3_gidipirus_set_consent_status($params) {
   $c = new CRM_Gidipirus_Logic_Consent();
   $consent = CRM_Gidipirus_Model_Consent::fromId($params['consent_id'], $params['status'], $params['date']);
   $attribution = new CRM_Gidipirus_Model_Attribution(
-    $params['campaign_id'], $params['utm_source'], $params['utm_medium'], $params['utm_campaign']
+    $params['method'], $params['campaign_id'], $params['utm_source'], $params['utm_medium'], $params['utm_campaign']
   );
-  if ($c->addConsent($params['contact_id'], $consent, $attribution)) {
+  if ($c->addConsent($params['contact_id'], $consent, $params['is_member'], $attribution)) {
     return civicrm_api3_create_success(NULL, $params);
   } else {
     return civicrm_api3_create_error("Unknown error", $params);

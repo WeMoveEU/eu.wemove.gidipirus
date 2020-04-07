@@ -62,9 +62,9 @@ function _civicrm_api3_gidipirus_cancel_consents_spec(&$spec) {
 function civicrm_api3_gidipirus_cancel_consents($params) {
   $c = new CRM_Gidipirus_Logic_Consent();
   $attribution = new CRM_Gidipirus_Model_Attribution(
-    $params['campaign_id'], $params['utm_source'], $params['utm_medium'], $params['utm_campaign']
+    $params['method'], $params['campaign_id'], $params['utm_source'], $params['utm_medium'], $params['utm_campaign']
   );
-  $cancelledConsents = $c->cancelConsents($params['contact_id'], $params['date'], $params['method'], $attribution);
+  $cancelledConsents = $c->cancelConsents($params['contact_id'], $params['date'], $attribution);
   $cancelledIds = array_map(function ($c) { return $c->id(); }, $cancelledConsents);
   return civicrm_api3_create_success($cancelledIds, $params);
 }

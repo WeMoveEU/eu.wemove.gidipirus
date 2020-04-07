@@ -67,18 +67,25 @@ class CRM_Gidipirus_Logic_Consent {
    * Store the fact that a contact (identified by contact_id) has been requested or has answered a consent (identified by consent_id):
    *  - Create a consent activity
    *  - Set the contact GDPR custom fields
+   *  - Create a join or leave activity if applicable
    */
-  public function addConsent($contactId, $consent, $attribution) {
+  public function addConsent($contactId, $consent, $isMember, $attribution) {
     $this->addConsentActivity($contactId, $consent, $attribution);
     $this->setGdprFields($contactId, $consent, $attribution);
+    if ($consent->status == 'Confirmed' && !$isMember) {
+      $this->addJoinActivity($contactId, $consent->date, $attribution);
+    }
+    else if (($consent->status == 'Rejected' || $consent->status == 'Cancelled') && $isMember) {
+      $this->addLeaveActivity($contactId, $consent->date, $attribution);
+    }
     return TRUE;
   }
 
   /**
    * c.f. API doc of cancel_consents
-   * Create an activity for each cancelled consent, and clear the GDPR fields
+   * Create an activity for each cancelled consent, a leave activity and clear the GDPR fields
    */
-  public function cancelConsents($contactId, $cancelDate, $method, $attribution) {
+  public function cancelConsents($contactId, $cancelDate, $attribution) {
     $activeConsents = $this->getConfirmedConsents($contactId);
     foreach ($activeConsents as $consent) {
       $cancelConsent = new CRM_Gidipirus_Model_Consent($consent->version, $consent->language, 'Cancelled', $cancelDate);
@@ -89,7 +96,7 @@ class CRM_Gidipirus_Logic_Consent {
       $this->setGdprFields($contactId, $cancelConsent, $attribution);
     }
 
-    $this->addLeaveActivity($contactId, $cancelDate, $method, $attribution);
+    $this->addLeaveActivity($contactId, $cancelDate, $attribution);
 
     return $activeConsents;
   }
@@ -99,8 +106,12 @@ class CRM_Gidipirus_Logic_Consent {
                        $attribution, self::consentActivityStatus($consent->status), $consent->language);
   }
 
-  private function addLeaveActivity($contactId, $cancelDate, $method, $attribution) {
-    $this->addActivity($contactId, self::leaveActivityType(), $cancelDate, $method, $attribution);
+  private function addJoinActivity($contactId, $joinDate, $attribution) {
+    $this->addActivity($contactId, self::joinActivityType(), $joinDate, $attribution->method, $attribution);
+  }
+
+  private function addLeaveActivity($contactId, $cancelDate, $attribution) {
+    $this->addActivity($contactId, self::leaveActivityType(), $cancelDate, $attribution->method, $attribution);
   }
 
   private function addActivity($contactId, $actType, $actDate, $subject, $attribution, $status = 'Completed', $location = NULL) {

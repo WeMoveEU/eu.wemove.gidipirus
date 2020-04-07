@@ -117,10 +117,13 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
       'consent_id' => self::$wemove_gp_en,
-      'status' => 'Pending'
+      'status' => 'Pending',
+      'is_member' => 0,
+      'method' => 'does not matter'
     ];
     $result = $this->callAPISuccess('Gidipirus', 'set_consent_status', $params);
     $this->assertHasConsent($params);
+    $this->assertHasEmptyGdprFields($params);
     self::deleteContact($contactId);
   }
 
@@ -137,11 +140,14 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
       'consent_id' => self::$wemove_gp_en,
-      'status' => 'Confirmed'
+      'status' => 'Confirmed',
+      'is_member' => 0,
+      'method' => 'unit-test'
     ];
     $result = $this->callAPISuccess('Gidipirus', 'set_consent_status', $params);
     $this->assertHasConsent($params);
     $this->assertHasGdprFields($params);
+    $this->assertHasJoin($params);
     self::deleteContact($contactId);
   }
 
@@ -157,11 +163,14 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
       'consent_id' => self::$wemove_en,
-      'status' => 'Cancelled'
+      'status' => 'Cancelled',
+      'is_member' => 1,
+      'method' => 'unit-test'
     ];
     $result = $this->callAPISuccess('Gidipirus', 'set_consent_status', $params);
     $this->assertHasConsent($params);
     $this->assertHasEmptyGdprFields($params);
+    $this->assertHasLeave($params);
     self::deleteContact($contactId);
   }
 
@@ -220,6 +229,18 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     ];
     $result = $this->callAPISuccess('Activity', 'get', $getParams);
     $this->assertEquals(1, $result['count'], "The contact does not have the expected leave activity");
+  }
+
+  public function assertHasJoin($params) {
+    $getParams = [
+      'source_contact_id' => $params['contact_id'],
+      'activity_type_id' => 'join',
+      'status_id' => 'Completed',
+      'subject' => $params['method'],
+      'activity_date_time', $params['date'],
+    ];
+    $result = $this->callAPISuccess('Activity', 'get', $getParams);
+    $this->assertEquals(1, $result['count'], "The contact does not have the expected join activity");
   }
 
   public function assertHasGdprFields($params) {
