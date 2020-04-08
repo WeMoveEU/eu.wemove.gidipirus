@@ -136,9 +136,12 @@ class CRM_Gidipirus_Logic_Consent {
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_medium') => $attribution->medium,
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_campaign') => $attribution->campaign,
     ];
-    $result = civicrm_api3('Activity', 'create', $params);
-    if ($result['is_error']) {
-      throw new Exception($result['error_message']);
+    $get = civicrm_api3('Activity', 'get', $params);
+    if ($get['count'] == 0) {
+      $result = civicrm_api3('Activity', 'create', $params);
+      if ($result['is_error']) {
+        throw new Exception("CRM_Gidipirus_Logic_Consent.addActivity: {$result['error_message']}");
+      }
     }
   }
 
