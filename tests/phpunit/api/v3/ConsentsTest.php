@@ -223,7 +223,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
   public function assertHasLeave($params) {
     $getParams = [
       'source_contact_id' => $params['contact_id'],
-      'activity_type_id' => 'leave',
+      'activity_type_id' => 'Leave',
       'status_id' => 'Completed',
       'subject' => $params['method'],
       'activity_date_time', $params['date'],
@@ -235,7 +235,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
   public function assertHasJoin($params) {
     $getParams = [
       'source_contact_id' => $params['contact_id'],
-      'activity_type_id' => 'join',
+      'activity_type_id' => 'Join',
       'status_id' => 'Completed',
       'subject' => $params['method'],
       'activity_date_time', $params['date'],

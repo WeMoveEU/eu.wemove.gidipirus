@@ -250,7 +250,7 @@ class CRM_Gidipirus_Logic_Consent {
    */
   public static function joinActivityType() {
     if (!self::$joinType) {
-      self::$joinType = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'join');
+      self::$joinType = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Join');
     }
     return self::$joinType;
   }
@@ -260,7 +260,7 @@ class CRM_Gidipirus_Logic_Consent {
    */
   public static function leaveActivityType() {
     if (!self::$leaveType) {
-      self::$leaveType = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'leave');
+      self::$leaveType = CRM_Core_PseudoConstant::getKey('CRM_Activity_BAO_Activity', 'activity_type_id', 'Leave');
     }
     return self::$leaveType;
   }
@@ -305,7 +305,7 @@ class CRM_Gidipirus_Logic_Consent {
 
   public static function createActivityTypes() {
     self::$dpaType = CRM_Gidipirus_Model::optionValue('activity_type', 'SLA Acceptance', ['title' => 'Data Policy Acceptance']);
-    self::$joinType = CRM_Gidipirus_Model::optionValue('activity_type', 'join', ['title' => 'Join']);
-    self::$leaveType = CRM_Gidipirus_Model::optionValue('activity_type', 'leave', ['title' => 'Leave']);
+    self::$joinType = CRM_Gidipirus_Model::optionValue('activity_type', 'Join', ['title' => 'Join']);
+    self::$leaveType = CRM_Gidipirus_Model::optionValue('activity_type', 'Leave', ['title' => 'Leave']);
   }
 }
