@@ -73,17 +73,17 @@ class CRM_Gidipirus_Logic_Consent {
     $this->addConsentActivity($contactId, $consent, $attribution);
     $this->setGdprFields($contactId, $consent, $attribution);
     if ($consent->status == 'Confirmed' && !$isMember) {
-      $this->addJoinActivity($contactId, $consent->date, $attribution);
+      $this->join($contactId, $consent->date, $attribution);
     }
     else if (($consent->status == 'Rejected' || $consent->status == 'Cancelled') && $isMember) {
-      $this->addLeaveActivity($contactId, $consent->date, $attribution);
+      $this->leave($contactId, $consent->date, $attribution);
     }
     return TRUE;
   }
 
   /**
    * c.f. API doc of cancel_consents
-   * Create an activity for each cancelled consent, a leave activity and clear the GDPR fields
+   * Create an activity for each cancelled consent, create a leave activity, leave the members group and clear the GDPR fields
    */
   public function cancelConsents($contactId, $cancelDate, $attribution) {
     $activeConsents = $this->getConfirmedConsents($contactId);
@@ -94,11 +94,20 @@ class CRM_Gidipirus_Logic_Consent {
 
     if (isset($cancelConsent)) {
       $this->setGdprFields($contactId, $cancelConsent, $attribution);
+      $this->leave($contactId, $cancelDate, $attribution);
     }
 
-    $this->addLeaveActivity($contactId, $cancelDate, $attribution);
-
     return $activeConsents;
+  }
+
+  private function join($contactId, $joinDate, $attribution) {
+    $this->addJoinActivity($contactId, $joinDate, $attribution);
+    $this->setMember($contactId, 'Added');
+	}
+
+  private function leave($contactId, $cancelDate, $attribution) {
+    $this->addLeaveActivity($contactId, $cancelDate, $attribution);
+    $this->setMember($contactId, 'Removed');
   }
 
   private function addConsentActivity($contactId, $consent, $attribution) {
@@ -131,6 +140,14 @@ class CRM_Gidipirus_Logic_Consent {
     if ($result['is_error']) {
       throw new Exception($result['error_message']);
     }
+  }
+
+  private function setMember($contactId, $status) {
+		$result = civicrm_api3('GroupContact', 'create', [
+			'group_id' => CRM_Gidipirus_Settings::membersGroupId(),
+			'contact_id' => $contactId,
+			'status' => $status,
+		]);
   }
 
   private function setGdprFields($contactId, $consent, $attribution) {

@@ -20,11 +20,11 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
 
     $result = self::createContact("Some SimpleMember", self::$simple_member, [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 06:06:06', 'status' => 'Completed']
-    ]);
+      ]);
 
     $result = self::createContact("Some YoumoveMember", self::$youmove_member, [
         ['id' => '2.0.somepartner-pt', 'date' => '2018-08-08 08:08:08', 'status' => 'Completed']
-    ]);
+      ]);
 
     $result = self::createContact("Some ExMember", self::$ex_member, [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 06:06:06', 'status' => 'Scheduled'],
@@ -32,7 +32,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
         ['id' => self::$wemove_en, 'date' => '2016-08-06 06:06:06', 'status' => 'Cancelled'],
         ['id' => self::$wemove_en, 'date' => '2017-07-07 07:07:07', 'status' => 'Completed'],
         ['id' => self::$wemove_en, 'date' => '2017-08-07 07:07:07', 'status' => 'Cancelled'],
-    ]);
+      ]);
   }
 
   public static function tearDownAfterClass() {
@@ -108,11 +108,11 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
    * Setting a consent status to a contact creates the corresponding activity
    */
   public function testSetExMemberPending() {
-    self::createContact("Clean ExMember", self::$for_update, [
+    $r = self::createContact("Clean ExMember", __METHOD__ . '@wemove.test', [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 07:06:06', 'status' => 'Completed'],
         ['id' => self::$wemove_en, 'date' => '2016-08-06 06:06:06', 'status' => 'Cancelled'],
-    ]);
-    $contactId = self::$contactIds[self::$for_update];
+      ], 'Removed');
+    $contactId = $r['id'];
     $params = [
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
@@ -124,18 +124,18 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     $result = $this->callAPISuccess('Gidipirus', 'set_consent_status', $params);
     $this->assertHasConsent($params);
     $this->assertHasEmptyGdprFields($params);
-    self::deleteContact($contactId);
+    $this->assertMember($contactId, 0);
   }
 
   /**
    * Setting a consent status to a contact creates the corresponding activity
    */
   public function testSetExMemberConfirmed() {
-    self::createContact("Clean ExMember", self::$for_update, [
+    $r = self::createContact("Clean ExMember", __METHOD__ . '@wemove.test', [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 07:06:06', 'status' => 'Completed'],
         ['id' => self::$wemove_en, 'date' => '2016-08-06 06:06:06', 'status' => 'Cancelled'],
-    ]);
-    $contactId = self::$contactIds[self::$for_update];
+      ], 'Removed');
+    $contactId = $r['id'];
     $params = [
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
@@ -148,17 +148,17 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     $this->assertHasConsent($params);
     $this->assertHasGdprFields($params);
     $this->assertHasJoin($params);
-    self::deleteContact($contactId);
+    $this->assertMember($contactId, 1);
   }
 
   /**
    * Setting a consent status to a contact creates the corresponding activity
    */
   public function testSetMemberCancelled() {
-    self::createContact("Clean Member", self::$for_update, [
+    $r = self::createContact("Clean Member", __METHOD__ . '@wemove.test', [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 07:06:06', 'status' => 'Completed'],
-    ]);
-    $contactId = self::$contactIds[self::$for_update];
+      ], 'Added');
+    $contactId = $r['id'];
     $params = [
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
@@ -171,17 +171,17 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     $this->assertHasConsent($params);
     $this->assertHasEmptyGdprFields($params);
     $this->assertHasLeave($params);
-    self::deleteContact($contactId);
+    $this->assertMember($contactId, 0);
   }
 
   /**
    * Cancelling a simple member creates a cancel activity, a leave activity and clears the gdpr fields
    */
   public function testCancelMember() {
-    self::createContact("Clean Member", self::$for_update, [
+    $r = self::createContact("Clean Member", __METHOD__ . '@wemove.test', [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 07:06:06', 'status' => 'Completed'],
-    ]);
-    $contactId = self::$contactIds[self::$for_update];
+      ], 'Added');
+    $contactId = $r['id'];
     $params = [
       'contact_id' => $contactId,
       'date' => '2019-09-09 09:09:09',
@@ -191,6 +191,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     $this->assertHasConsent($params + ['status' => 'Cancelled', 'consent_id' => self::$wemove_en]);
     $this->assertHasLeave($params);
     $this->assertHasEmptyGdprFields($params);
+    $this->assertMember($contactId, 0);
     self::deleteContact($contactId);
   }
 
@@ -215,7 +216,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'location' => $language,
       'activity_date_time', $params['date'],
     ];
-    $result = $this->callAPISuccess('Activity', 'get', $getParams);
+    $result = civicrm_api3('Activity', 'get', $getParams);
     $this->assertEquals(1, $result['count'], "The contact does not have the expected consent activity");
   }
 
@@ -227,7 +228,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'subject' => $params['method'],
       'activity_date_time', $params['date'],
     ];
-    $result = $this->callAPISuccess('Activity', 'get', $getParams);
+    $result = civicrm_api3('Activity', 'get', $getParams);
     $this->assertEquals(1, $result['count'], "The contact does not have the expected leave activity");
   }
 
@@ -239,7 +240,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'subject' => $params['method'],
       'activity_date_time', $params['date'],
     ];
-    $result = $this->callAPISuccess('Activity', 'get', $getParams);
+    $result = civicrm_api3('Activity', 'get', $getParams);
     $this->assertEquals(1, $result['count'], "The contact does not have the expected join activity");
   }
 
@@ -262,7 +263,18 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     $this->assertEmpty($result[CRM_Gidipirus_Logic_Consent::field('gdpr.Consent_version')]);
   }
 
-  public static function createContact($name, $email, $consents) {
+  public function assertMember($contactId, $expected) {
+    $getParams = [
+      'contact_id' => $contactId,
+      'status' => 'Added',
+      'group_id' => CRM_Gidipirus_Settings::membersGroupId()
+    ];
+    $result = civicrm_api3('GroupContact', 'get', $getParams);
+    $not = $expected ? 'not' : '';
+    $this->assertEquals($expected, $result['count'], "The contact $contactId is $not a member");
+  }
+
+  public static function createContact($name, $email, $consents, $memberStatus = NULL) {
 		$splitName = explode(' ', $name);
     $params = [
 			'contact_type' => "Individual",
@@ -281,6 +293,13 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
         'status_id' => $consent['status'] //Expecting activity status, not consent status!
       ];
     }
+    if ($memberStatus) {
+      $params['api.GroupContact.create'] = [
+        'contact_id' => '$value.id',
+        'group_id' => CRM_Gidipirus_Settings::membersGroupId(),
+        'status' => $memberStatus
+      ];
+    }
 		$result = civicrm_api3('Contact', 'create', $params);
     self::$contactIds[$email] = $result['id'];
     return $result;
@@ -290,8 +309,8 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
     $query = "
       DELETE a, ac, c
       FROM civicrm_contact c
-      JOIN civicrm_activity_contact ac ON ac.contact_id = c.id
-      JOIN civicrm_activity a ON a.id = ac.activity_id
+      LEFT JOIN civicrm_activity_contact ac ON ac.contact_id = c.id
+      LEFT JOIN civicrm_activity a ON a.id = ac.activity_id
       WHERE c.id = %1
     ";
     $params = [ 1 => [$contactId, 'Integer'] ];
