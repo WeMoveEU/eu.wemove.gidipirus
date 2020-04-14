@@ -132,6 +132,7 @@ class CRM_Gidipirus_Logic_Consent {
       'subject' => $subject,
       'location' => $location,
       'status_id' => $status,
+      'parent_id' => $attribution->sourceActivity,
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_source') => $attribution->source,
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_medium') => $attribution->medium,
       CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_campaign') => $attribution->campaign,

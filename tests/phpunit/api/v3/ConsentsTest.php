@@ -119,7 +119,8 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'consent_id' => self::$wemove_gp_en,
       'status' => 'Pending',
       'is_member' => 0,
-      'method' => 'does not matter'
+      'method' => 'does not matter',
+      'source_activity' => 1 //Not a proper action activity, does not matter for tests
     ];
     $result = $this->callAPISuccess('Gidipirus', 'set_consent_status', $params);
     $this->assertHasConsent($params);
@@ -221,6 +222,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'subject' => $version,
       'location' => $language,
       'activity_date_time' => $params['date'],
+      'parent_id' => $params['source_activity']
     ];
     $result = civicrm_api3('Activity', 'get', $getParams);
     $this->assertEquals(1, $result['count'], "The contact does not have the expected consent activity");
@@ -233,6 +235,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'status_id' => 'Completed',
       'subject' => $params['method'],
       'activity_date_time' => $params['date'],
+      'parent_id' => $params['source_activity']
     ];
     $result = civicrm_api3('Activity', 'get', $getParams);
     $this->assertEquals(1, $result['count'], "The contact does not have the expected leave activity");
@@ -245,6 +248,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
       'status_id' => 'Completed',
       'subject' => $params['method'],
       'activity_date_time' => $params['date'],
+      'parent_id' => $params['source_activity']
     ];
     $result = civicrm_api3('Activity', 'get', $getParams);
     $this->assertEquals(1, $result['count'], "The contact does not have the expected join activity");

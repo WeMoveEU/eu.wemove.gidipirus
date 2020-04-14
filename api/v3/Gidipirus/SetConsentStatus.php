@@ -45,6 +45,14 @@ function _civicrm_api3_gidipirus_set_consent_status_spec(&$spec) {
     'type' => CRM_Utils_Type::T_STRING,
     'api.required' => 1,
   ];
+  $spec['source_activity'] = [
+    'name' => 'source_activity',
+    'title' => 'Source activity id',
+    'description' => 'CiviCRM Id of the activity that originated this change of consent status',
+    'type' => CRM_Utils_Type::T_INT,
+    'api.required' => 0,
+    'api.default' => NULL,
+  ];
   $spec['campaign_id'] = [
     'name' => 'campaign_id',
     'title' => 'Campaign id',
@@ -88,7 +96,7 @@ function civicrm_api3_gidipirus_set_consent_status($params) {
   $c = new CRM_Gidipirus_Logic_Consent();
   $consent = CRM_Gidipirus_Model_Consent::fromId($params['consent_id'], $params['status'], $params['date']);
   $attribution = new CRM_Gidipirus_Model_Attribution(
-    $params['method'], $params['campaign_id'], $params['utm_source'], $params['utm_medium'], $params['utm_campaign']
+    $params['method'], $params['campaign_id'], $params['utm_source'], $params['utm_medium'], $params['utm_campaign'], $params['source_activity']
   );
   if ($c->addConsent($params['contact_id'], $consent, $params['is_member'], $attribution)) {
     return civicrm_api3_create_success(NULL, $params);
