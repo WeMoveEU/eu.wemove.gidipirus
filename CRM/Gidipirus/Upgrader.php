@@ -33,9 +33,121 @@ class CRM_Gidipirus_Upgrader extends CRM_Gidipirus_Upgrader_Base {
     CRM_Gidipirus_Settings::emailTemplate();
     CRM_Gidipirus_Settings::scannedActivitiesId();
 
+    CRM_Gidipirus_Logic_Consent::createActivityTypes();
+
     $this->upgrade_01_cleanup_job();
 
+    $this->installGdprCustomFields();
+
     return TRUE;
+  }
+
+  public function installGdprCustomFields() {
+		$result = civicrm_api3('CustomGroup', 'get', [ 'name' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomGroup', 'create', [
+        'title' => "GDPR temporary",
+        'extends' => "Individual",
+        'name' => "GDPR_temporary",
+        'table_name' => "civicrm_value_gdpr_temporary",
+      ]);
+    }
+
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "Consent_date", 'custom_group_id' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "GDPR_temporary",
+        'label' => "Consent date",
+        'name' => "Consent_date",
+        'column_name' => "consent_date",
+        'data_type' => "Date",
+        'html_type' => "Select Date",
+        'is_view' => 0,
+      ]);
+    }
+
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "Consent_version", 'custom_group_id' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "GDPR_temporary",
+        'label' => "Consent version",
+        'name' => "Consent_version",
+        'column_name' => "consent_version",
+        'data_type' => "String",
+        'html_type' => "Text",
+        'is_view' => 0,
+				'text_length' => 32
+      ]);
+    }
+
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "campaign_id", 'custom_group_id' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "GDPR_temporary",
+        'label' => "Campaign id",
+        'name' => "campaign_id",
+        'column_name' => "campaign_id",
+        'data_type' => "Int",
+        'html_type' => "Text",
+        'is_view' => 0,
+      ]);
+    }
+
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "Consent_language", 'custom_group_id' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "GDPR_temporary",
+        'label' => "Consent language",
+        'name' => "Consent_language",
+        'column_name' => "consent_language",
+        'data_type' => "String",
+        'html_type' => "Text",
+        'is_view' => 0,
+        'text_length' => 2,
+      ]);
+    }
+
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "utm_source", 'custom_group_id' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "GDPR_temporary",
+        'label' => "UTM source",
+        'name' => "utm_source",
+        'column_name' => "utm_source",
+        'data_type' => "String",
+        'html_type' => "Text",
+        'is_view' => 0,
+        'text_length' => 255,
+      ]);
+    }
+
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "utm_medium", 'custom_group_id' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "GDPR_temporary",
+        'label' => "UTM medium",
+        'name' => "utm_medium",
+        'column_name' => "utm_medium",
+        'data_type' => "String",
+        'html_type' => "Text",
+        'is_view' => 0,
+        'text_length' => 255,
+      ]);
+    }
+
+    $result = civicrm_api3('CustomField', 'get', [ 'name' => "utm_campaign", 'custom_group_id' => "GDPR_temporary" ]);
+    if ($result['count'] == 0) {
+      civicrm_api3('CustomField', 'create', [
+        'custom_group_id' => "GDPR_temporary",
+        'label' => "UTM campaign",
+        'name' => "utm_campaign",
+        'column_name' => "utm_campaign",
+        'data_type' => "String",
+        'html_type' => "Text",
+        'is_view' => 0,
+        'text_length' => 255,
+      ]);
+    }
   }
 
   /**

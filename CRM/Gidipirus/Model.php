@@ -12,7 +12,7 @@ class CRM_Gidipirus_Model {
    * @return int
    * @throws \CiviCRM_API3_Exception
    */
-  protected static function optionValue($optionGroupName, $name, $options = []) {
+  public static function optionValue($optionGroupName, $name, $options = []) {
     $params = array(
       'sequential' => 1,
       'option_group_id' => $optionGroupName,
@@ -37,7 +37,7 @@ class CRM_Gidipirus_Model {
    * @return int
    * @throws \CiviCRM_API3_Exception
    */
-  protected static function optionGroup($title, $options = []) {
+  public static function optionGroup($title, $options = []) {
     $params = array(
       'sequential' => 1,
       'name' => self::sanitize($title),
