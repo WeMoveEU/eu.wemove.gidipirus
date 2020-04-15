@@ -133,9 +133,9 @@ class CRM_Gidipirus_Logic_Consent {
       'location' => $location,
       'status_id' => $status,
       'parent_id' => $attribution->sourceActivity,
-      CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_source') => $attribution->source,
-      CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_medium') => $attribution->medium,
-      CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_activity_campaign') => $attribution->campaign,
+      self::field('activity.utm_source') => $attribution->source,
+      self::field('activity.utm_medium') => $attribution->medium,
+      self::field('activity.utm_campaign') => $attribution->campaign,
     ];
     $get = civicrm_api3('Activity', 'get', $params);
     if ($get['count'] == 0) {
@@ -298,6 +298,10 @@ class CRM_Gidipirus_Logic_Consent {
         } else {
           throw new Exception("Could not find GDPR custom field $field");
         }
+      }
+      $activityUtmFields = ['source', 'medium', 'campaign'];
+      foreach ($activityUtmFields as $field) {
+        self::$customFields["activity.utm_$field"] = CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', "field_activity_$field");
       }
     }
     if ($name) {
