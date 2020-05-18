@@ -1,5 +1,7 @@
 <?php
 
+use CRM_Gidipirus_ExtensionUtil as E;
+
 class CRM_Gidipirus_Logic_Consent {
 
   private static $dpaType;
@@ -61,6 +63,68 @@ class CRM_Gidipirus_Logic_Consent {
     }
 
     return $requiredConsents;
+  }
+
+  public function getConfirmationEmail($contactId, $attribution) {
+    $campaignId = $attribution->campaignId;
+    $campaign = new CRM_Gidipirus_Model_Campaign($campaignId);
+    $locale = $campaign->getLanguage();
+    $email['from'] = $campaign->getSenderMail();
+    $email['format'] = NULL;
+
+    $contact = [];
+    $paramsContact = [
+      'id' => $contactId,
+      'sequential' => 1,
+      'return' => ["id", "display_name", "first_name", "last_name", "hash", "email", "email_greeting"],
+    ];
+    $result = civicrm_api3('Contact', 'get', $paramsContact);
+    if ($result['count'] == 1) {
+      $contact = $result['values'][0];
+      $contact['checksum'] = CRM_Contact_BAO_Contact_Utils::generateChecksum($contactId, NULL, NULL, $contact['hash']);
+      $email['toEmail'] = $contact['email'];
+    }
+
+    $hash = sha1(CIVICRM_SITE_KEY . $contactId);
+    $baseAcceptUrl = 'civicrm/consent/confirm';
+    $baseRejectUrl = 'civicrm/consent/optout';
+    $utmSource = $attribution->source;
+    $utmMedium = $attribution->medium;
+    $utmCampaign = $attribution->campaign;
+
+    $urlAccept = CRM_Utils_System::url($baseAcceptUrl,
+      "id=$contactId&cid=$campaignId&hash=$hash&utm_source=$utmSource&utm_medium=$utmMedium&utm_campaign=$utmCampaign", TRUE);
+    $urlReject = CRM_Utils_System::url($baseRejectUrl,
+      "id=$contactId&cid=$campaignId&hash=$hash&utm_source=$utmSource&utm_medium=$utmMedium&utm_campaign=$utmCampaign", TRUE);
+
+    $template = CRM_Core_Smarty::singleton();
+    $template->assign('url_confirm_and_keep', $urlAccept);
+    $template->assign('url_confirm_and_not_receive', $urlReject);
+    $template->assign('contact', $contact);
+
+    $email['subject'] = $template->fetch('string:' . $campaign->getSubjectNew());
+
+    $message = $campaign->getMessageNew();
+    if (!$message) {
+      $message = CRM_Speakcivi_Tools_Dictionary::getMessageNew($locale);
+    }
+    $message = $template->fetch('string:' . $message);
+
+    $locales = self::getLocale($locale);
+    $confirmationBlockHtml = $template->fetch(E::path('templates/CRM/Gidipirus/Confirmation/ConfirmationBlock.' . $locales['html'] . '.html.tpl'));
+    $confirmationBlockText = $template->fetch(E::path('templates/CRM/Gidipirus/Confirmation/ConfirmationBlock.' . $locales['text'] . '.text.tpl'));
+    $privacyBlock = $template->fetch(E::path('templates/CRM/Gidipirus/Confirmation/PrivacyBlock.' . $locales['html'] . '.tpl'));
+    $messageHtml = str_replace("#CONFIRMATION_BLOCK", $confirmationBlockHtml, $message);
+    $messageText = str_replace("#CONFIRMATION_BLOCK", $confirmationBlockText, $message);
+    $messageHtml = str_replace("#PRIVACY_BLOCK", $privacyBlock, $messageHtml);
+    $messageText = str_replace("#PRIVACY_BLOCK", $privacyBlock, $messageText);
+
+    $email['html'] = html_entity_decode($messageHtml);
+    $email['text'] = html_entity_decode(self::convertHtmlToText($messageText));
+    $email['groupName'] = 'WemoveConsent.request';
+    $email['custom-campaign-id'] = $campaignId;
+
+    return $email;
   }
 
   /**
@@ -315,5 +379,40 @@ class CRM_Gidipirus_Logic_Consent {
     self::$dpaType = CRM_Gidipirus_Model::optionValue('activity_type', 'SLA Acceptance', ['title' => 'Data Policy Acceptance']);
     self::$joinType = CRM_Gidipirus_Model::optionValue('activity_type', 'Join', ['title' => 'Join']);
     self::$leaveType = CRM_Gidipirus_Model::optionValue('activity_type', 'Leave', ['title' => 'Leave']);
+  }
+
+  /**
+   * todo refactor!
+   * Get locale version for locale from params. Default is a english version.
+   * @param string $locale Locale, so format is xx_YY (language_COUNTRY), ex. en_GB
+   * @return array
+   */
+  public static function getLocale($locale) {
+    $localeTab = array(
+      'html' => 'en_GB',
+      'text' => 'en_GB',
+    );
+    foreach ($localeTab as $type => $localeType) {
+      if (file_exists(E::path('templates/CRM/Gidipirus/Confirmation/ConfirmationBlock.' . $locale . '.' . $type . '.tpl'))) {
+        $localeTab[$type] = $locale;
+      }
+    }
+    return $localeTab;
+  }
+
+
+  /**
+   * todo refactor
+   */
+  public static function convertHtmlToText($html) {
+    $html = str_ireplace(array('<br>', '<br/>', '<br />'), "\n", $html);
+    $html = strip_tags($html, '<a>');
+    $re = '/<a href="(.*)">(.*)<\/a>/';
+    if (preg_match_all($re, $html, $matches)) {
+      foreach ($matches[0] as $id => $tag) {
+        $html = str_replace($tag, $matches[2][$id] . "\n" . str_replace(' ', '+', $matches[1][$id]), $html);
+      }
+    }
+    return $html;
   }
 }
