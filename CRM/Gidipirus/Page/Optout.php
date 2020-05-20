@@ -5,6 +5,7 @@ class CRM_Gidipirus_Page_Optout extends CRM_Gidipirus_Page_ConsentEmail {
   /**
    * @return void
    * @throws \CiviCRM_API3_Exception
+   * @throws \Exception
    */
   public function run() {
     $this->setValues();

@@ -6,6 +6,8 @@ class CRM_Gidipirus_Page_Confirm extends CRM_Gidipirus_Page_ConsentEmail {
 
   /**
    * Register consent confirmation and set activity as optin if applicable
+   *
+   * @throws \Exception
    */
   public function run() {
     $this->setValues();

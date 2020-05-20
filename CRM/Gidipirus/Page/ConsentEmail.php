@@ -20,6 +20,8 @@ class CRM_Gidipirus_Page_ConsentEmail extends CRM_Core_Page {
 
   public $activityStatusId = array();
 
+  public $memberGroupId;
+
   /**
    * Set values from request.
    *
@@ -433,7 +435,7 @@ class CRM_Gidipirus_Page_ConsentEmail extends CRM_Core_Page {
   }
 
   /**
-   * @param \CRM_Speakcivi_Logic_Campaign $campaign
+   * @param \CRM_Gidipirus_Model_Campaign $campaign
    * @param string $defaultPage
    */
   public function redirect($campaign, $defaultPage = 'thank-you-for-your-confirmation') {
