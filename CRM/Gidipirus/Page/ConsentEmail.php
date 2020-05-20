@@ -18,8 +18,6 @@ class CRM_Gidipirus_Page_ConsentEmail extends CRM_Core_Page {
 
   public $utmCampaign = '';
 
-  public $activityStatusId = array();
-
   public $memberGroupId;
 
   /**

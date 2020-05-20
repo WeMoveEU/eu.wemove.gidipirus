@@ -34,11 +34,14 @@ class CRM_Gidipirus_Page_Confirm extends CRM_Gidipirus_Page_ConsentEmail {
 
     $isMember = $this->isGroupContactAdded($this->contactId, $this->memberGroupId);
     $this->setConsentStatus($campaign->getConsentIds(), 'Confirmed', $isMember);
-    $this->setActivityStatus($this->activityId, 'optin');
 
-    // TODO move this into a hook
-    $speakcivi = new CRM_Speakcivi_Page_Speakcivi();
-    $speakcivi->sendConfirm($contact['email'], $this->contactId, $this->activityId, $this->campaignId, FALSE, FALSE, 'post-confirm');
+    if ($this->activityId) {
+      $this->setActivityStatus($this->activityId, 'optin');
+
+      // TODO move this into a hook
+      $speakcivi = new CRM_Speakcivi_Page_Speakcivi();
+      $speakcivi->sendConfirm($contact['email'], $this->contactId, $this->activityId, $this->campaignId, FALSE, FALSE, 'post-confirm');
+    }
 
     $this->redirect($campaign, 'post_confirm');
   }

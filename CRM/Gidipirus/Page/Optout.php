@@ -24,7 +24,10 @@ class CRM_Gidipirus_Page_Optout extends CRM_Gidipirus_Page_ConsentEmail {
     
     // Either the contact was member and cancel_consents was called, or the contact was not: in both cases it is not a member at this stage
     $this->setConsentStatus($campaign->getConsentIds(), 'Rejected', FALSE);
-    $this->setActivityStatus($this->activityId, 'optout', $location);
+
+    if ($this->activityId) {
+      $this->setActivityStatus($this->activityId, 'optout', $location);
+    }
 
     $redirect = $campaign->getRedirectOptout();
     $url = $this->determineRedirectUrl('post_optout', $language, $redirect);
