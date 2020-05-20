@@ -50,10 +50,6 @@ function _civicrm_api3_gidipirus_send_consent_request_spec(&$spec) {
  */
 function civicrm_api3_gidipirus_send_consent_request(&$params) {
   $contactId = $params['contact_id'];
-  $campaignId = $params['campaign_id'];
-  $utmSource = $params['utm_source'];
-  $utmMedium = $params['utm_medium'];
-  $utmCampaign = $params['utm_campaign'];
 
   $consentLogic = new CRM_Gidipirus_Logic_Consent();
   $attribution = new CRM_Gidipirus_Model_Attribution(
@@ -63,7 +59,7 @@ function civicrm_api3_gidipirus_send_consent_request(&$params) {
   try {
     $sent = CRM_Utils_Mail::send($email);
     if ($sent) {
-      $camp = new CRM_Gidipirus_Model_Campaign($campaignId);
+      $camp = new CRM_Gidipirus_Model_Campaign($params['campaign_id']);
       foreach ($camp->getConsentIds() as $consentId) {
         CRM_Core_Error::debug_var('consentid', $consentId);
         $consent = CRM_Gidipirus_Model_Consent::fromId($consentId, 'Pending', date('Y-m-d H:i:s'));
