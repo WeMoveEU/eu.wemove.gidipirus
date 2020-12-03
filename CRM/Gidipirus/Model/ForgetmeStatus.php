@@ -22,7 +22,6 @@ class CRM_Gidipirus_Model_ForgetmeStatus extends CRM_Gidipirus_Model {
   const IN_PROGRESS_DESC = 'Request is recorded and fullfilment date is in future';
   const OBSOLETE_DESC = 'Request is recorded and fullfilment date is in past';
   const COMPLETED_DESC = 'Forgetme processed successfully';
-  const BLOCKED_DESC = 'Contact is a donor and can not be processed';
   const TOO_MANY_REQUESTS_DESC = 'Contact has too many requests';
   const NOT_APPLICABLE_DESC = 'Contact type is not an Individual';
 
