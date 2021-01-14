@@ -139,6 +139,7 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
     ]);
     $params = [
       'sequential' => 1,
+      'source_contact_id' => self::$loggedUserId,
       'activity_type_id' => CRM_Gidipirus_Model_Activity::inboundEmailId(),
       'activity_date_time' => date('YmdHis'),
       'status_id' => 'Completed',
@@ -146,11 +147,6 @@ class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndT
       'details' => 'details of inbound email',
       'api.ActivityContact.create' => [
         0 => [
-          'activity_id' => '$value.id',
-          'contact_id' => self::$loggedUserId,
-          'record_type_id' => 2,
-        ],
-        1 => [
           'activity_id' => '$value.id',
           'contact_id' => self::$fullContactId,
           'record_type_id' => 3,

@@ -127,6 +127,7 @@ class CRM_Gidipirus_Logic_Register {
     $fulfillmentId = CRM_Gidipirus_Model_Activity::forgetmeFulfillmentId();
     $params = [
       'sequential' => 1,
+      'source_contact_id' => CRM_Core_Session::getLoggedInContactID(),
       'activity_type_id' => $fulfillmentId,
       'activity_date_time' => $fullfillmentDate,
       'status_id' => CRM_Gidipirus_Model_Activity::scheduled(),
@@ -134,11 +135,6 @@ class CRM_Gidipirus_Logic_Register {
       'location' => $channel,
       'api.ActivityContact.create' => [
         0 => [
-          'activity_id' => '$value.id',
-          'contact_id' => CRM_Core_Session::getLoggedInContactID(),
-          'record_type_id' => 2,
-        ],
-        1 => [
           'activity_id' => '$value.id',
           'contact_id' => $contactId,
           'record_type_id' => 3,
