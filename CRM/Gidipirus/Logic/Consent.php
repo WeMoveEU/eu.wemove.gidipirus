@@ -150,15 +150,23 @@ class CRM_Gidipirus_Logic_Consent {
    * Create an activity for each cancelled consent, create a leave activity, leave the members group and clear the GDPR fields
    */
   public function cancelConsents($contactId, $cancelDate, $attribution) {
-    $activeConsents = $this->getConfirmedConsents($contactId);
-    foreach ($activeConsents as $consent) {
-      $cancelConsent = new CRM_Gidipirus_Model_Consent($consent->version, $consent->language, 'Cancelled', $cancelDate);
-      $this->addConsentActivity($contactId, $cancelConsent, $attribution);
-    }
+    $tx = new CRM_Core_Transaction();
+    try {
+      $activeConsents = $this->getConfirmedConsents($contactId);
+      foreach ($activeConsents as $consent) {
+        $cancelConsent = new CRM_Gidipirus_Model_Consent($consent->version, $consent->language, 'Cancelled', $cancelDate);
+        $this->addConsentActivity($contactId, $cancelConsent, $attribution);
+      }
 
-    if (isset($cancelConsent)) {
-      $this->setGdprFields($contactId, $cancelConsent, $attribution);
-      $this->leave($contactId, $attribution);
+      if (isset($cancelConsent)) {
+        $this->setGdprFields($contactId, $cancelConsent, $attribution);
+        $this->leave($contactId, $attribution);
+      }
+      $tx->commit();
+    }
+    catch (Exception $ex) {
+      $tx->rollback()->commit();
+      throw $ex;
     }
 
     return $activeConsents;
