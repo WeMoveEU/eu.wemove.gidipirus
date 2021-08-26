@@ -29,7 +29,8 @@ class CRM_Gidipirus_Model_Campaign {
     $this->fieldConsentIds = CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_campaign_consent_ids');
     $this->fieldRedirectConfirm = CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_redirect_confirm');
     $this->fieldRedirectOptout = CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_redirect_optout');
-    $this->campArray = CRM_Speakcivi_Logic_Cache_Campaign::getCampaignByLocalId($campaignId);
+    $cache = new CRM_WeAct_CampaignCache(Civi::cache(), NULL);
+    $this->campArray = $cache->getCiviCampaign($campaignId);
   }
 
   public function getLanguage() {
