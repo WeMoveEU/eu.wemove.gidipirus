@@ -7,7 +7,7 @@ use Civi\Test\EndToEndInterface;
  * @group e2e
  * @see cv
  */
-class CRM_Gidipirus_BaseTest extends \PHPUnit_Framework_TestCase implements EndToEndInterface {
+class CRM_Gidipirus_BaseTest extends \PHPUnit\Framework\TestCase implements EndToEndInterface {
 
   use \Civi\Test\Api3TestTrait;
 

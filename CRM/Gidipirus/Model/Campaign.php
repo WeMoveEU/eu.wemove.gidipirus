@@ -29,8 +29,26 @@ class CRM_Gidipirus_Model_Campaign {
     $this->fieldConsentIds = CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_campaign_consent_ids');
     $this->fieldRedirectConfirm = CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_redirect_confirm');
     $this->fieldRedirectOptout = CRM_Core_BAO_Setting::getItem('Speakcivi API Preferences', 'field_redirect_optout');
-    $cache = new CRM_WeAct_CampaignCache(Civi::cache(), NULL);
-    $this->campArray = $cache->getCiviCampaign($campaignId);
+    $this->campArray = $this->getCiviCampaign($campaignId);
+  }
+
+  public function getCiviCampaign($campaign_id) {
+    // UGLINESS WARNING
+    // WeAct depends on Gidipirus so we cannot benefit from CRM_WeAct_CampaignCache without introducing a circular dependency
+    // Instead we use the same cache key, so we that we don't duplicate cache entries for WeAct and Gidipirus
+    // A cleaner approach would be to use a different key and implement hooks to update the cache on campaign updates, or have the cache in its own extension
+    $key = "WeAct:Campaign:{$campaign_id}";
+    $entry = Civi::cache()->get($key);
+    if (!$entry) {
+      $entry = civicrm_api3('Campaign', 'getsingle', ['id' => $campaign_id]);
+      $this->setCiviCampaign($entry);
+    }
+    return $entry;
+  }
+
+  public function setCiviCampaign($campaign) {
+    $key = "WeAct:Campaign:{$campaign['id']}";
+    Civi::cache()->set($key, $campaign);
   }
 
   public function getLanguage() {
