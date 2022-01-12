@@ -36,6 +36,6 @@ function _civicrm_api3_gidipirus_get_consents_required_spec(&$spec) {
  */
 function civicrm_api3_gidipirus_get_consents_required($params) {
   $c = new CRM_Gidipirus_Logic_Consent();
-  $result = ['consents_required' => $c->getRequiredConsents($params['email'], $params['country'], $params['consent_ids'])];
+  $result = ['consents_required' => $c->getRequiredConsentsSimplified($params['email'], $params['country'], $params['consent_ids'])];
   return civicrm_api3_create_success($result, $params);
 }
