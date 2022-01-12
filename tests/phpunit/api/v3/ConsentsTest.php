@@ -20,11 +20,11 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
 
     $result = self::createContact("Some SimpleMember", self::$simple_member, [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 06:06:06', 'status' => 'Completed']
-      ]);
+      ], 'Added');
 
     $result = self::createContact("Some YoumoveMember", self::$youmove_member, [
         ['id' => '2.0.somepartner-pt', 'date' => '2018-08-08 08:08:08', 'status' => 'Completed']
-      ]);
+      ], 'Added');
 
     $result = self::createContact("Some ExMember", self::$ex_member, [
         ['id' => self::$wemove_en, 'date' => '2016-06-06 06:06:06', 'status' => 'Scheduled'],
@@ -32,7 +32,7 @@ class api_v3_ConsentsTest extends CRM_Gidipirus_BaseTest {
         ['id' => self::$wemove_en, 'date' => '2016-08-06 06:06:06', 'status' => 'Cancelled'],
         ['id' => self::$wemove_en, 'date' => '2017-07-07 07:07:07', 'status' => 'Completed'],
         ['id' => self::$wemove_en, 'date' => '2017-08-07 07:07:07', 'status' => 'Cancelled'],
-      ]);
+      ], 'Removed');
   }
 
   public static function tearDownAfterClass() {

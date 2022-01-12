@@ -11,6 +11,44 @@ class CRM_Gidipirus_Logic_Consent {
   private static $customFields;
 
   /**
+   * Simplified version og getRequiredConsents based on whether the contact belongs to the Members group,
+   * instead of looking at consents history and evaluating each consent independently
+   */
+  public function getRequiredConsentsSimplified($email, $country, $consent_ids) {
+    $query = "
+      SELECT 1 AS is_member
+      FROM civicrm_group_contact gc
+      JOIN civicrm_email e ON gc.contact_id = e.contact_id AND e.is_primary
+      WHERE gc.status = 'Added' AND gc.group_id = %2
+        AND e.email = %1;
+    ";
+    $queryParams = [
+      1 => [$email, 'String'],
+      2 => [CRM_Gidipirus_Settings::membersGroupId(), 'Integer'],
+    ];
+    $isMember = FALSE;
+    $dao = CRM_Core_DAO::executeQuery($query, $queryParams);
+    while ($dao->fetch()) {
+      $isMember = TRUE;
+    }
+
+    $requiredConsents = [];
+    if (!$isMember) {
+      if (in_array($country, ['de', 'at'])) {
+        $factors = 2;
+      } else {
+        $factors = 1;
+      }
+
+      foreach ($consent_ids as $consentId) {
+        $requiredConsents[] = [ 'consent_id' => $consentId, 'factors' => $factors ];
+      }
+    }
+
+    return $requiredConsents;
+  }
+
+  /**
    * c.f. API doc of get_consents_required
    */
   public function getRequiredConsents($email, $country, $consent_ids) {
