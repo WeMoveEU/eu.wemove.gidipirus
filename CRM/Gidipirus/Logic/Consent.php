@@ -139,6 +139,7 @@ class CRM_Gidipirus_Logic_Consent {
     $template->assign('url_confirm_and_keep', $urlAccept);
     $template->assign('url_confirm_and_not_receive', $urlReject);
     $template->assign('contact', $contact);
+    $template->assign('campaign_name', $campaign->getDescription());
 
     $email['subject'] = $template->fetch('string:' . $campaign->getSubjectNew());
 

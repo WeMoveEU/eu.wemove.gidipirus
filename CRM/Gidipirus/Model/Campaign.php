@@ -82,4 +82,8 @@ class CRM_Gidipirus_Model_Campaign {
   public function getRedirectOptout() {
 		return $this->campArray[$this->fieldRedirectOptout];
   }
+
+  public function getDescription() {
+    return $this->campArray['description'];
+  }
 }
